@@ -6,8 +6,9 @@ import { seed } from "./db/seed";
 
 const config = loadConfig();
 const db = createDb(config.DB_PATH);
-const { createdUsers } = seed(db, config.SEED_PASSWORD);
+const { createdUsers, createdDocuments } = await seed(db, config.SEED_PASSWORD);
 if (createdUsers > 0) console.log(`[seed] ${createdUsers} akun contoh dibuat (lihat README).`);
+if (createdDocuments > 0) console.log(`[seed] ${createdDocuments} dokumen contoh diindeks.`);
 
 const app = await buildApp({ db, config }, { logger: true });
 await app.listen({ host: config.HOST, port: config.API_PORT });

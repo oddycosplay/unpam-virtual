@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import type { LlmProviderKind, Role } from "@unpam/shared";
+import type { ChatSource, LlmProviderKind, Role } from "@unpam/shared";
 
 const createdAt = () =>
   text("created_at")
@@ -36,6 +36,45 @@ export const auditLogs = sqliteTable("audit_logs", {
   targetId: text("target_id"),
   approvedByUserId: integer("approved_by_user_id").references(() => users.id),
   details: text("details", { mode: "json" }).$type<Record<string, unknown>>(),
+  createdAt: createdAt(),
+});
+
+/** Dokumen resmi kampus yang diunggah admin sebagai basis pengetahuan agent. */
+export const knowledgeDocuments = sqliteTable("knowledge_documents", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  fileName: text("file_name").notNull(),
+  mimeType: text("mime_type").notNull(),
+  /** Agent yang boleh memakai dokumen ini, mis. "akademik". */
+  agentScope: text("agent_scope").notNull().default("akademik"),
+  chunkCount: integer("chunk_count").notNull().default(0),
+  uploadedByUserId: integer("uploaded_by_user_id").references(() => users.id),
+  createdAt: createdAt(),
+});
+
+/** Potongan dokumen. Diindeks oleh tabel virtual FTS5 document_chunks_fts (lihat migrasi custom). */
+export const documentChunks = sqliteTable("document_chunks", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  documentId: integer("document_id")
+    .notNull()
+    .references(() => knowledgeDocuments.id, { onDelete: "cascade" }),
+  ordinal: integer("ordinal").notNull(),
+  /** Judul bagian terdekat (heading markdown) atau "Halaman N" untuk PDF. */
+  section: text("section"),
+  page: integer("page"),
+  content: text("content").notNull(),
+});
+
+export const chatMessages = sqliteTable("chat_messages", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  agentId: text("agent_id").notNull(),
+  role: text("role").$type<"user" | "assistant">().notNull(),
+  content: text("content").notNull(),
+  sources: text("sources", { mode: "json" }).$type<ChatSource[]>(),
+  status: text("status").$type<"ok" | "error">().notNull().default("ok"),
   createdAt: createdAt(),
 });
 

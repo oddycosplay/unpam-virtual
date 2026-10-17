@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
-import { Link, Navigate, Route, Routes } from "react-router-dom";
+import { Link, NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { hasPermission, type Permission } from "@unpam/shared";
 import { useAuth } from "../features/auth/AuthContext";
 import { LoginPage } from "../features/auth/LoginPage";
 import { HomePage } from "../features/home/HomePage";
 import { LlmConfigPage } from "../features/admin/LlmConfigPage";
+import { DocumentsPage } from "../features/admin/DocumentsPage";
+import { ChatPage } from "../features/chat/ChatPage";
 import { RoleBadge } from "../components/ui/RoleBadge";
 
 function Guard({ permission, children }: { permission?: Permission; children: ReactNode }) {
@@ -27,7 +29,9 @@ function Shell({ children }: { children: ReactNode }) {
           Unpam Virtual
         </Link>
         <nav>
-          {user && hasPermission(user.role, "admin:config") && <Link to="/admin/llm">Provider AI</Link>}
+          {user && hasPermission(user.role, "agent:chat") && <NavLink to="/chat">Agent Akademik</NavLink>}
+          {user && hasPermission(user.role, "admin:documents") && <NavLink to="/admin/documents">Dokumen</NavLink>}
+          {user && hasPermission(user.role, "admin:config") && <NavLink to="/admin/llm">Provider AI</NavLink>}
         </nav>
         <div className="topbar-user">
           {user && (
@@ -55,6 +59,22 @@ export function App() {
         element={
           <Guard>
             <HomePage />
+          </Guard>
+        }
+      />
+      <Route
+        path="/chat"
+        element={
+          <Guard permission="agent:chat">
+            <ChatPage />
+          </Guard>
+        }
+      />
+      <Route
+        path="/admin/documents"
+        element={
+          <Guard permission="admin:documents">
+            <DocumentsPage />
           </Guard>
         }
       />

@@ -19,7 +19,7 @@ let app: Awaited<ReturnType<typeof buildApp>>;
 
 beforeEach(async () => {
   db = createDb(":memory:");
-  seed(db, config.SEED_PASSWORD);
+  await seed(db, config.SEED_PASSWORD);
   app = await buildApp({ db, config });
 });
 

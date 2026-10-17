@@ -2,7 +2,10 @@
 
 Kampus virtual 3D Prodi Sistem Informasi Unpam dengan agent AI. Spesifikasi lengkap: [PRD Unpam Virtual (MVP).md](PRD%20Unpam%20Virtual%20(MVP).md).
 
-Status: **tahap 1 (Fondasi)**: struktur proyek, SQLite, login, peran, dan LLM provider layer.
+Status: **tahap 2 (Agent Akademik)** selesai.
+
+- Tahap 1: struktur proyek, SQLite, login, peran, dan LLM provider layer.
+- Tahap 2: chat Agent Akademik dengan RAG dokumen (SQLite FTS5) dan sumber ditampilkan.
 
 ## Menjalankan
 
@@ -37,6 +40,20 @@ Atur lewat menu **Provider AI** (login sebagai admin) atau variabel `LLM_*` di `
 - **OpenAI-compatible:** isi Base URL, misalnya `https://openrouter.ai/api/v1` atau `http://localhost:11434/v1` (Ollama).
 
 API key disimpan terenkripsi AES-256-GCM di database dan tidak pernah dikirim balik ke browser. Tombol **Uji koneksi** mengirim satu prompt pendek dan hasilnya tercatat di log audit.
+
+## Agent Akademik
+
+Menu **Agent Akademik** tersedia untuk mahasiswa, pengurus HIMA, dosen, dan Kaprodi.
+
+- Pertanyaan dicari di potongan dokumen dengan BM25 (SQLite FTS5). Bila tidak ada potongan yang relevan, agent langsung menjawab "tidak tahu" tanpa memanggil LLM.
+- Agent hanya menjawab dari kutipan dokumen dan wajib memberi rujukan [n]. Sumber yang dirujuk tampil di bawah jawaban.
+- NIM, nomor telepon, dan email disamarkan sebelum teks dikirim ke provider AI.
+- Gagal → coba ulang sekali → pesan eskalasi ke pengguna dan `agent.error_escalated` di log audit.
+- Setiap jawaban tercatat di log audit (`agent.answered`) dengan latensi, jumlah token, dan dokumen sumber.
+
+## Dokumen
+
+Admin mengunggah dokumen lewat menu **Dokumen** (.pdf, .md, .txt, maks 10 MB) dan memilih agent yang boleh memakainya. Dua dokumen contoh fiktif di `server/seed-docs/` diindeks otomatis bila basis pengetahuan masih kosong. Hapus keduanya setelah dokumen resmi diunggah.
 
 ## Perintah lain
 

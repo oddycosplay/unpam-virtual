@@ -42,6 +42,40 @@ export interface LlmTestResult {
   error?: string;
 }
 
+export interface ChatSource {
+  /** Nomor rujukan yang dipakai agent di jawaban, mis. [1]. */
+  ref: number;
+  documentId: number;
+  documentTitle: string;
+  section: string | null;
+  page: number | null;
+  excerpt: string;
+}
+
+export interface ChatMessageView {
+  id: number;
+  role: "user" | "assistant";
+  content: string;
+  sources: ChatSource[];
+  status: "ok" | "error";
+  createdAt: string;
+}
+
+export interface ChatReply {
+  userMessage: ChatMessageView;
+  reply: ChatMessageView;
+}
+
+export interface KnowledgeDocumentView {
+  id: number;
+  title: string;
+  fileName: string;
+  mimeType: string;
+  agentScope: string;
+  chunkCount: number;
+  createdAt: string;
+}
+
 export interface ApiError {
   error: string;
 }

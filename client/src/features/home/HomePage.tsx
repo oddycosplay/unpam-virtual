@@ -1,4 +1,5 @@
-import { ROLE_INFO, ROLE_PERMISSIONS } from "@unpam/shared";
+import { Link } from "react-router-dom";
+import { ROLE_INFO, ROLE_PERMISSIONS, hasPermission } from "@unpam/shared";
 import { useAuth } from "../auth/AuthContext";
 
 const PERMISSION_LABEL: Record<string, string> = {
@@ -20,9 +21,14 @@ export function HomePage() {
     <section className="card">
       <h2>Halo, {user.name}</h2>
       <p className="muted">
-        Anda masuk sebagai <strong>{ROLE_INFO[user.role].label}</strong>. Kampus 3D, chat agent, dan papan tugas
+        Anda masuk sebagai <strong>{ROLE_INFO[user.role].label}</strong>. Papan tugas, dashboard, dan kampus 3D
         menyusul di tahap berikutnya.
       </p>
+      {hasPermission(user.role, "agent:chat") && (
+        <Link to="/chat" className="button-link">
+          Tanya Agent Akademik
+        </Link>
+      )}
       <h3>Hak akses Anda</h3>
       <ul className="perm-list">
         {ROLE_PERMISSIONS[user.role].map((p) => (
