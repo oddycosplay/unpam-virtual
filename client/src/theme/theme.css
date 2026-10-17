@@ -1,0 +1,110 @@
+:root {
+  /* Prodi SI: biru, putih, kuning. HIMA: merah, biru, putih. */
+  --si-blue: #1e5bb8;
+  --si-blue-dark: #143f82;
+  --si-yellow: #f5c400;
+  --hima-red: #c8102e;
+  --bg: #f3f6fb;
+  --surface: #ffffff;
+  --text: #16202e;
+  --muted: #5b6676;
+  --border: #d6deea;
+  --success: #17803d;
+  --danger: #b42318;
+  --radius: 10px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: var(--bg); }
+h1, h2, h3 { margin: 0 0 0.5rem; }
+h3 { margin-top: 1.25rem; font-size: 1rem; }
+a { color: var(--si-blue); }
+
+.muted { color: var(--muted); }
+.error { color: var(--danger); }
+.success { color: var(--success); }
+.center { text-align: center; margin-top: 4rem; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+.narrow { max-width: 560px; }
+
+label { display: block; margin-bottom: 0.9rem; font-weight: 500; font-size: 0.92rem; }
+input, select {
+  display: block;
+  width: 100%;
+  margin-top: 0.3rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  background: #fff;
+}
+input:focus-visible, select:focus-visible, button:focus-visible {
+  outline: 2px solid var(--si-yellow);
+  outline-offset: 2px;
+}
+
+button {
+  font: inherit;
+  font-weight: 600;
+  padding: 0.6rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid var(--si-blue);
+  background: var(--si-blue);
+  color: #fff;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { background: var(--si-blue-dark); }
+button:disabled { opacity: 0.6; cursor: progress; }
+button.secondary { background: #fff; color: var(--si-blue); }
+button.secondary:hover:not(:disabled) { background: #eaf1fb; }
+button.ghost { background: transparent; border-color: transparent; color: var(--muted); padding: 0.4rem 0.6rem; }
+button.ghost:hover:not(:disabled) { background: #eef2f7; }
+.row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+.login { min-height: 100vh; display: grid; place-items: center; padding: 1rem; }
+.login-card { width: 100%; max-width: 380px; border-top: 4px solid var(--si-blue); }
+.login-card button { width: 100%; margin-top: 0.4rem; }
+
+.brand { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; text-decoration: none; color: inherit; }
+.brand h1 { font-size: 1.35rem; margin: 0; }
+.brand p { margin: 0.15rem 0 0; font-size: 0.88rem; }
+.brand.small { margin: 0; font-weight: 700; }
+.brand-mark {
+  width: 28px; height: 28px; flex: none; border-radius: 6px;
+  background: linear-gradient(135deg, var(--si-blue) 0 60%, var(--si-yellow) 60% 100%);
+}
+
+.topbar {
+  display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.topbar nav { flex: 1; display: flex; gap: 1rem; }
+.topbar-user { display: flex; align-items: center; gap: 0.6rem; font-size: 0.92rem; }
+.page { padding: 1.5rem 1rem; max-width: 960px; margin: 0 auto; }
+
+.role-badge {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--border); border-radius: 999px;
+  font-size: 0.8rem; font-weight: 600; background: #f8fafc;
+}
+.role-swatches { display: inline-flex; }
+.role-swatches span {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.2); margin-left: -3px;
+}
+.role-swatches span:first-child { margin-left: 0; }
+
+.perm-list { padding-left: 1.2rem; margin: 0; line-height: 1.8; }
+.test-result { margin-top: 1rem; padding: 0.75rem; border-radius: 8px; background: #f8fafc; border: 1px solid var(--border); }

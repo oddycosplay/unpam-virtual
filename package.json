@@ -1,0 +1,25 @@
+{
+  "name": "unpam-virtual",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/shared",
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "node scripts/ensure-env.mjs && concurrently -k -n server,client -c blue,yellow \"npm run dev -w server\" \"npm run dev -w client\"",
+    "test": "npm run test -w server",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w client",
+    "db:generate": "npm run db:generate -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  },
+  "allowScripts": {
+    "better-sqlite3@13.0.3": true,
+    "esbuild@0.18.20": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.2": true
+  }
+}
