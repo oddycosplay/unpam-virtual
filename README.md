@@ -2,10 +2,12 @@
 
 Kampus virtual 3D Prodi Sistem Informasi Unpam dengan agent AI. Spesifikasi lengkap: [PRD Unpam Virtual (MVP).md](PRD%20Unpam%20Virtual%20(MVP).md).
 
-Status: **tahap 2 (Agent Akademik)** selesai.
+Status: **tahap 3 (Papan tugas dan Agent HIMA)** selesai.
 
 - Tahap 1: struktur proyek, SQLite, login, peran, dan LLM provider layer.
 - Tahap 2: chat Agent Akademik dengan RAG dokumen (SQLite FTS5) dan sumber ditampilkan.
+- Dashboard ruang kendali 3D (bagian dari tahap 4–5, dikerjakan lebih awal).
+- Tahap 3: papan tugas, Agent HIMA menyusun proposal, alur persetujuan Kaprodi, dan notifikasi.
 
 ## Menjalankan
 
@@ -49,6 +51,17 @@ Halaman utama setelah login adalah ruang kendali isometrik 3D (React Three Fiber
 - Robot agent bergerak di sepanjang jalur sesuai statusnya (PRD §7): Running ke meja kerja, Waiting Approval ke gerbang Kaprodi, Idle ke kantin. Label di atasnya menampilkan nama, status, dan aktivitas. Klik Agent Akademik untuk membuka chat.
 - Layar hologram dan panel samping menampilkan data nyata dari `GET /api/dashboard` (diperbarui tiap 5 detik): pertanyaan dan jawaban hari ini, rata-rata waktu jawab, error, jawaban per jam, basis pengetahuan, dan aktivitas terbaru dari log audit. Aktivitas akun dan konfigurasi hanya terlihat oleh admin.
 - Seret untuk memutar, scroll atau cubit untuk zoom. Gerakan dikurangi bila sistem meminta *reduced motion*. Bila WebGL tidak tersedia, data tetap tampil di panel.
+
+## Proposal HIMA dan persetujuan Kaprodi
+
+1. Pengurus HIMA mengisi **Minta proposal baru** (nama kegiatan, deskripsi, opsional tanggal/tempat/peserta/batas anggaran). Orkestrator mencatat tugas di papan (kolom *Diproses*).
+2. Agent HIMA menyusun draf di latar belakang mengikuti SOP HIMA, lewat tool call terstruktur (`simpan_draf_proposal`). Data yang tidak diketahui diberi penanda `[isi …]`. Gagal → coba ulang sekali → status *Gagal disusun* dan tombol **Coba lagi**.
+3. Draf muncul di **Hasil Kerja**. Pengurus menyuntingnya; setiap simpanan menjadi versi baru.
+4. Hanya pengurus (manusia) yang bisa **Ajukan ke Kaprodi**. Agent tidak punya jalur untuk mengajukan sendiri (PRD §6). Kaprodi mendapat notifikasi, dan robot Agent HIMA di dashboard berdiri di gerbang Ruang Kaprodi.
+5. Kaprodi **Setujui**, **Tolak**, atau **Minta revisi** (catatan wajib untuk tolak/revisi). Pemohon mendapat notifikasi. Dosen dan Kaprodi bisa memberi masukan.
+6. Kartu tugas berpindah otomatis: Diproses → Menunggu Persetujuan → Selesai (atau kembali ke Diproses saat revisi).
+
+Draf tetap privat milik pemohon sampai diajukan. Semua langkah tercatat di log audit, termasuk siapa yang menyetujui. Penyusunan yang terputus karena server restart ditandai gagal saat server dimulai lagi.
 
 ## Agent Akademik
 

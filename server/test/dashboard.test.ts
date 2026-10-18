@@ -57,7 +57,8 @@ describe("dashboard", () => {
     expect(body.answersPerHour).toHaveLength(12);
     expect(body.answersPerHour.at(-1)).toBe(2);
     expect(body.agents.find((a: { id: string }) => a.id === "akademik")).toMatchObject({ status: "error" });
-    expect(body.agents.find((a: { id: string }) => a.id === "hima")).toMatchObject({ active: false, status: "idle" });
+    expect(body.agents.find((a: { id: string }) => a.id === "hima")).toMatchObject({ active: true, status: "idle" });
+    expect(body.stats).toMatchObject({ pendingApprovals: 0, decidedToday: 0 });
   });
 
   it("aktivitas akun hanya terlihat oleh admin", async () => {

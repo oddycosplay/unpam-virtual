@@ -11,7 +11,7 @@ interface Entry {
 const DEFINITIONS: { id: AgentId; name: string; active: boolean; idleActivity: string }[] = [
   { id: "orkestrator", name: "Orkestrator", active: true, idleActivity: "Menunggu pesan masuk" },
   { id: "akademik", name: "Agent Akademik", active: true, idleActivity: "Istirahat di kantin" },
-  { id: "hima", name: "Agent HIMA", active: false, idleActivity: "Belum aktif (tahap 3)" },
+  { id: "hima", name: "Agent HIMA", active: true, idleActivity: "Siap menyusun proposal" },
 ];
 
 /** Status "completed" kembali ke "idle" setelah jeda ini. */

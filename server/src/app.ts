@@ -12,7 +12,10 @@ import { adminRoutes } from "./modules/admin/routes";
 import { chatRoutes } from "./modules/chat/routes";
 import { documentRoutes } from "./modules/documents/routes";
 import { dashboardRoutes } from "./modules/dashboard/routes";
+import { submissionRoutes } from "./modules/submissions/routes";
+import { taskRoutes } from "./modules/tasks/routes";
 import { AgentRuntime } from "./agents/runtime";
+import { JobTracker } from "./agents/jobs";
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
@@ -22,16 +25,19 @@ export interface AppContext {
   /** Provider LLM aktif. Dibaca ulang tiap panggilan agar perubahan di panel admin langsung berlaku. */
   llm: () => LlmProvider;
   agents: AgentRuntime;
+  /** Pekerjaan agent di latar belakang (mis. menyusun proposal). */
+  jobs: JobTracker;
 }
 
 export async function buildApp(
-  base: { db: Db; config: AppConfig; llm?: () => LlmProvider },
+  base: { db: Db; config: AppConfig; llm?: () => LlmProvider; jobs?: JobTracker },
   opts: { logger?: boolean } = {},
 ) {
   const ctx: AppContext = {
     ...base,
     llm: base.llm ?? (() => getLlmProvider(base.db, base.config)),
     agents: new AgentRuntime(),
+    jobs: base.jobs ?? new JobTracker(),
   };
   const app = Fastify({ logger: opts.logger ?? false });
   await app.register(cookie);
@@ -45,6 +51,9 @@ export async function buildApp(
   chatRoutes(app, ctx);
   documentRoutes(app, ctx);
   dashboardRoutes(app, ctx);
+  submissionRoutes(app, ctx);
+  taskRoutes(app, ctx);
 
+  app.addHook("onClose", async () => ctx.jobs.idle());
   return app;
 }

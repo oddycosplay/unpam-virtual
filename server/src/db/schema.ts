@@ -1,6 +1,15 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import type { ChatSource, LlmProviderKind, Role } from "@unpam/shared";
+import type {
+  ChatSource,
+  Decision,
+  LlmProviderKind,
+  ProposalBrief,
+  ProposalContent,
+  Role,
+  SubmissionStatus,
+  TaskStatus,
+} from "@unpam/shared";
 
 const createdAt = () =>
   text("created_at")
@@ -75,6 +84,94 @@ export const chatMessages = sqliteTable("chat_messages", {
   content: text("content").notNull(),
   sources: text("sources", { mode: "json" }).$type<ChatSource[]>(),
   status: text("status").$type<"ok" | "error">().notNull().default("ok"),
+  createdAt: createdAt(),
+});
+
+/** Pengajuan (proposal kegiatan HIMA). Isi terkini di `content`, riwayat di submission_versions. */
+export const submissions = sqliteTable("submissions", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  kind: text("kind").notNull().default("proposal_kegiatan"),
+  title: text("title").notNull(),
+  status: text("status").$type<SubmissionStatus>().notNull(),
+  brief: text("brief", { mode: "json" }).$type<ProposalBrief>(),
+  content: text("content", { mode: "json" }).$type<ProposalContent>(),
+  currentVersion: integer("current_version").notNull().default(0),
+  error: text("error"),
+  createdByUserId: integer("created_by_user_id")
+    .notNull()
+    .references(() => users.id),
+  createdAt: createdAt(),
+  updatedAt: text("updated_at")
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+  submittedAt: text("submitted_at"),
+});
+
+export const submissionVersions = sqliteTable("submission_versions", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  submissionId: integer("submission_id")
+    .notNull()
+    .references(() => submissions.id, { onDelete: "cascade" }),
+  version: integer("version").notNull(),
+  content: text("content", { mode: "json" }).$type<ProposalContent>().notNull(),
+  createdByAgent: text("created_by_agent"),
+  createdByUserId: integer("created_by_user_id").references(() => users.id),
+  note: text("note"),
+  createdAt: createdAt(),
+});
+
+/** Keputusan penyetuju (PRD §9: penyetuju, keputusan, catatan). */
+export const approvals = sqliteTable("approvals", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  submissionId: integer("submission_id")
+    .notNull()
+    .references(() => submissions.id, { onDelete: "cascade" }),
+  version: integer("version").notNull(),
+  decision: text("decision").$type<Decision>().notNull(),
+  note: text("note"),
+  deciderUserId: integer("decider_user_id")
+    .notNull()
+    .references(() => users.id),
+  createdAt: createdAt(),
+});
+
+export const submissionComments = sqliteTable("submission_comments", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  submissionId: integer("submission_id")
+    .notNull()
+    .references(() => submissions.id, { onDelete: "cascade" }),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  body: text("body").notNull(),
+  createdAt: createdAt(),
+});
+
+/** Kartu di papan tugas. */
+export const tasks = sqliteTable("tasks", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  status: text("status").$type<TaskStatus>().notNull().default("baru"),
+  agentId: text("agent_id"),
+  createdByUserId: integer("created_by_user_id")
+    .notNull()
+    .references(() => users.id),
+  submissionId: integer("submission_id").references(() => submissions.id, { onDelete: "cascade" }),
+  createdAt: createdAt(),
+  updatedAt: text("updated_at")
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+export const notifications = sqliteTable("notifications", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  title: text("title").notNull(),
+  body: text("body").notNull(),
+  link: text("link"),
+  readAt: text("read_at"),
   createdAt: createdAt(),
 });
 

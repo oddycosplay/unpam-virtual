@@ -1,16 +1,28 @@
 import type { FastifyInstance } from "fastify";
 import { desc, inArray, sql } from "drizzle-orm";
-import type { ActivityItem, DashboardSummary } from "@unpam/shared";
+import { alias } from "drizzle-orm/sqlite-core";
+import { TASK_STATUSES, type ActivityItem, type DashboardSummary, type TaskStatus } from "@unpam/shared";
 import type { AppContext } from "../../app";
 import { requireAuth } from "../../auth/auth";
 import { auditLogs, users } from "../../db/schema";
 
 const HOURS = 12;
+const approver = alias(users, "approver");
 const AGENT_NAMES: Record<string, string> = { akademik: "Agent Akademik", hima: "Agent HIMA", orkestrator: "Orkestrator" };
 /** Peristiwa yang boleh dilihat semua peran. Peristiwa akun dan konfigurasi hanya untuk admin. */
-const PUBLIC_ACTIONS = ["agent.answered", "agent.error_escalated", "document.uploaded", "document.deleted"];
+const PUBLIC_ACTIONS = [
+  "agent.answered",
+  "agent.error_escalated",
+  "agent.drafted",
+  "task.created",
+  "submission.submitted",
+  "submission.decided",
+  "document.uploaded",
+  "document.deleted",
+];
+const DECISION_TEXT: Record<string, string> = { disetujui: "menyetujui", ditolak: "menolak", revisi: "meminta revisi" };
 
-type AuditRow = typeof auditLogs.$inferSelect & { actorName: string | null };
+type AuditRow = typeof auditLogs.$inferSelect & { actorName: string | null; approverName: string | null };
 
 /** created_at disimpan UTC "YYYY-MM-DD HH:MM:SS". */
 function parseUtc(value: string): Date {
@@ -27,7 +39,22 @@ function describe(row: AuditRow): Pick<ActivityItem, "text" | "kind"> {
         ? { kind: "agent", text: `${agent} menjawab pertanyaan (${(Number(d.latencyMs) / 1000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} dtk)` }
         : { kind: "agent", text: `${agent}: pertanyaan di luar dokumen, dijawab "tidak tahu"` };
     case "agent.error_escalated":
-      return { kind: "error", text: `${agent} gagal menjawab dan dieskalasi ke admin` };
+      return { kind: "error", text: `${agent} gagal ${row.actorAgent === "hima" ? "menyusun proposal" : "menjawab"} dan dieskalasi` };
+    case "agent.drafted":
+      return { kind: "agent", text: `${agent} menyelesaikan draf "${d.title}"` };
+    case "task.created":
+      return { kind: "agent", text: `Orkestrator mencatat tugas "${d.title}" untuk ${AGENT_NAMES[String(d.agent)] ?? "agent"}` };
+    case "submission.submitted":
+      return { kind: "user", text: `"${d.title}" diajukan ke Kaprodi` };
+    case "submission.decided":
+      return {
+        kind: d.decision === "ditolak" ? "error" : "user",
+        text: `${row.approverName ?? "Kaprodi"} ${DECISION_TEXT[String(d.decision)] ?? "memutuskan"} "${d.title}"`,
+      };
+    case "submission.edited":
+      return { kind: "user", text: `${who} menyunting "${d.title}" (versi ${d.version})` };
+    case "submission.commented":
+      return { kind: "user", text: `${who} memberi masukan pada proposal` };
     case "document.uploaded":
       return { kind: "system", text: `Dokumen "${d.title}" diindeks (${d.chunkCount} potongan)` };
     case "document.deleted":
@@ -101,17 +128,39 @@ export function dashboardRoutes(app: FastifyInstance, { db, agents }: AppContext
         details: auditLogs.details,
         createdAt: auditLogs.createdAt,
         actorName: users.name,
+        approverName: approver.name,
       })
       .from(auditLogs)
-      .leftJoin(users, sql`${users.id} = ${auditLogs.actorUserId}`);
+      .leftJoin(users, sql`${users.id} = ${auditLogs.actorUserId}`)
+      .leftJoin(approver, sql`${approver.id} = ${auditLogs.approvedByUserId}`);
     const rows: AuditRow[] = (isAdmin ? base : base.where(inArray(auditLogs.action, PUBLIC_ACTIONS)))
       .orderBy(desc(auditLogs.id))
       .limit(10)
       .all();
 
+    const work = db.get<{ pending: number; decided: number }>(sql`
+      SELECT (SELECT count(*) FROM submissions WHERE status = 'menunggu_persetujuan') AS pending,
+             (SELECT count(*) FROM approvals
+                WHERE date(created_at, 'localtime') = date('now', 'localtime')) AS decided
+    `)!;
+    const taskCounts = Object.fromEntries(TASK_STATUSES.map((s) => [s, 0])) as Record<TaskStatus, number>;
+    for (const r of db.all<{ status: TaskStatus; n: number }>(sql`SELECT status, count(*) AS n FROM tasks GROUP BY status`)) {
+      taskCounts[r.status] = r.n;
+    }
+
+    // Agent HIMA berdiri di depan Ruang Kaprodi selama ada proposal menunggu (PRD §7).
+    const agentViews = agents.list().map((a) =>
+      a.id === "hima" && (a.status === "idle" || a.status === "completed") && work.pending > 0
+        ? { ...a, status: "waiting_approval" as const, activity: `${work.pending} proposal menunggu Kaprodi` }
+        : a,
+    );
+
     const summary: DashboardSummary = {
-      agents: agents.list(),
+      agents: agentViews,
       stats: {
+        pendingApprovals: work.pending,
+        decidedToday: work.decided,
+        tasks: taskCounts,
         questionsToday: today.questions,
         answersToday: today.answers,
         errorsToday: today.errors,

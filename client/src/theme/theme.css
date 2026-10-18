@@ -110,7 +110,8 @@ button.ghost:hover:not(:disabled) { background: #eef2f7; }
 .small { font-size: 0.85rem; }
 .stack { display: grid; gap: 1.25rem; }
 
-.topbar nav a { text-decoration: none; color: var(--muted); font-weight: 600; padding: 0.3rem 0; border-bottom: 2px solid transparent; }
+.topbar nav { flex-wrap: wrap; row-gap: 0.25rem; }
+.topbar nav a { text-decoration: none; color: var(--muted); font-weight: 600; padding: 0.3rem 0; border-bottom: 2px solid transparent; white-space: nowrap; }
 .topbar nav a.active { color: var(--si-blue); border-bottom-color: var(--si-yellow); }
 
 .button-link {
@@ -283,6 +284,141 @@ button.chip:hover:not(:disabled) { background: #eaf1fb; }
 
 @media (prefers-reduced-motion: reduce) {
   .bubble, .button-link { transition: none; }
+}
+
+/* ---------- Tahap 3: tugas, pengajuan, notifikasi ---------- */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap; }
+.page-head h1 { font-size: 1.5rem; margin: 0.1rem 0 0.25rem; }
+.page-head p { margin: 0; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 1rem; }
+textarea { display: block; width: 100%; margin-top: 0.3rem; padding: 0.6rem 0.7rem; border: 1px solid var(--border); border-radius: 8px; font: inherit; resize: vertical; }
+textarea:focus-visible { outline: 2px solid var(--si-yellow); outline-offset: 2px; }
+.link-button { background: none; border: none; color: var(--si-blue); padding: 0; font-weight: 600; font-size: 0.85rem; }
+.link-button:hover:not(:disabled) { background: none; text-decoration: underline; }
+.small-btn { padding: 0.4rem 0.8rem; font-size: 0.88rem; }
+.row-between { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem; }
+
+.callout { margin: 0; padding: 0.75rem 1rem; border-radius: 10px; background: #eaf1fb; border: 1px solid #cddcf3; }
+.callout p { margin: 0 0 0.5rem; }
+.callout.warn { background: #fff8db; border-color: #f2df8f; }
+.callout.bad { background: #fdf1f0; border-color: #f3c7c2; }
+.callout.working { display: flex; align-items: center; gap: 0.6rem; }
+.spinner { width: 16px; height: 16px; flex: none; border-radius: 50%; border: 2px solid #cddcf3; border-top-color: var(--si-blue); animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.status-badge { display: inline-block; padding: 0.12rem 0.55rem; border-radius: 999px; font-size: 0.76rem; font-weight: 700; white-space: nowrap; background: #eef2f7; color: #3c4a5a; }
+.st-menyusun { background: #e6f0ff; color: #1e5bb8; }
+.st-gagal, .st-ditolak { background: #fde8e6; color: #b42318; }
+.st-draft { background: #eef2f7; color: #3c4a5a; }
+.st-menunggu_persetujuan { background: #fff4c2; color: #7a5b00; }
+.st-revisi { background: #ffe9d1; color: #93460b; }
+.st-disetujui { background: #ddf5e5; color: #17803d; }
+.agent-chip { font-size: 0.72rem; font-weight: 600; color: var(--muted); padding: 0.1rem 0.45rem; border: 1px solid var(--border); border-radius: 999px; }
+
+/* Papan tugas (kanban) */
+.board { display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr)); gap: 0.9rem; overflow-x: auto; padding-bottom: 0.5rem; }
+.board-col { background: #eef2f8; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem; min-height: 220px; border-top: 4px solid #9aa9bb; }
+.board-col.col-diproses { border-top-color: var(--si-blue); }
+.board-col.col-menunggu_persetujuan { border-top-color: var(--si-yellow); }
+.board-col.col-selesai { border-top-color: var(--success); }
+.board-col h2 { font-size: 0.9rem; margin: 0 0 0.6rem; display: flex; justify-content: space-between; }
+.board-col .count { color: var(--muted); font-weight: 600; }
+.board-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.55rem; }
+.board-empty { margin: 0.5rem 0 0; }
+.task-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.65rem 0.7rem; display: grid; gap: 0.35rem; }
+.task-card a { font-weight: 600; text-decoration: none; color: var(--text); overflow-wrap: anywhere; }
+.task-card a:hover { color: var(--si-blue); text-decoration: underline; }
+.task-card p { margin: 0; }
+.task-meta { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+
+/* Detail pengajuan */
+.submission { display: grid; gap: 1rem; max-width: 1200px; margin: 0 auto; }
+.page:has(.submission) { max-width: 1240px; }
+.submission-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 1rem; align-items: start; }
+.submission-grid h2 { font-size: 1rem; }
+.proposal-doc h2 { font-size: 1.3rem; text-align: center; margin-bottom: 1.2rem; }
+.proposal-doc h3 { font-size: 0.98rem; margin: 1.3rem 0 0.4rem; color: var(--si-blue-dark); }
+.proposal-doc p, .proposal-doc li { line-height: 1.65; }
+.proposal-doc p { margin: 0 0 0.7rem; }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tfoot th { border-bottom: none; color: var(--text); font-size: 0.92rem; }
+fieldset { border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; margin: 0 0 0.9rem; }
+legend { font-weight: 600; font-size: 0.92rem; padding: 0 0.3rem; }
+.row-edit { display: grid; grid-template-columns: 7rem 1fr auto; gap: 0.4rem; margin-bottom: 0.4rem; align-items: center; }
+.row-edit input { margin-top: 0; }
+.budget-row, .budget-head { grid-template-columns: 1fr 5rem 6rem 8rem auto; }
+.budget-head { display: grid; gap: 0.4rem; margin-bottom: 0.25rem; }
+.action-bar { position: sticky; bottom: 0; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin: 1rem -1.5rem -1.5rem; padding: 0.8rem 1.5rem; background: rgba(255, 255, 255, 0.96); border-top: 1px solid var(--border); border-radius: 0 0 var(--radius) var(--radius); }
+.action-bar input { flex: 1; min-width: 180px; margin-top: 0; }
+
+.decision { border-top: 4px solid var(--si-yellow); }
+.segmented { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.3rem; margin-bottom: 0.9rem; }
+.segmented label { margin: 0; text-align: center; padding: 0.45rem 0.3rem; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
+.segmented input { position: absolute; opacity: 0; pointer-events: none; }
+.segmented label:has(input:focus-visible) { outline: 2px solid var(--si-yellow); outline-offset: 2px; }
+.segmented .active.d-disetujui { background: #ddf5e5; border-color: #8fd3a6; color: #17803d; }
+.segmented .active.d-revisi { background: #ffe9d1; border-color: #f0b980; color: #93460b; }
+.segmented .active.d-ditolak { background: #fde8e6; border-color: #f0a59c; color: #b42318; }
+.decision button[type="submit"] { width: 100%; }
+
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+.timeline li { display: grid; gap: 0.1rem; padding-left: 0.8rem; border-left: 3px solid var(--border); font-size: 0.88rem; }
+.timeline li span { color: var(--muted); }
+.timeline time { color: var(--muted); font-size: 0.78rem; }
+.timeline .tl-agent { border-left-color: var(--si-blue); }
+.timeline .tl-disetujui { border-left-color: var(--success); }
+.timeline .tl-revisi { border-left-color: #e8913a; }
+.timeline .tl-ditolak { border-left-color: var(--danger); }
+.comments { list-style: none; margin: 0 0 0.8rem; padding: 0; display: grid; gap: 0.7rem; }
+.comments p { margin: 0.15rem 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Lonceng notifikasi */
+.bell { position: relative; }
+.bell-button { position: relative; display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border-radius: 50%; background: transparent; border-color: transparent; color: var(--muted); }
+.bell-button:hover:not(:disabled) { background: #eef2f7; }
+.shell-dark .bell-button { color: var(--dk-muted); }
+.shell-dark .bell-button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.07); }
+.bell-count { position: absolute; top: 2px; right: 1px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--danger); color: #fff; font-size: 0.68rem; font-weight: 700; display: grid; place-items: center; }
+.bell-panel {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 50;
+  width: min(360px, calc(100vw - 32px)); max-height: 70vh; overflow-y: auto;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(15, 30, 50, 0.18);
+}
+.bell-panel header { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); }
+.bell-panel ul { list-style: none; margin: 0; padding: 0; }
+.bell-panel li button {
+  display: grid; gap: 0.15rem; width: 100%; text-align: left; padding: 0.7rem 0.9rem;
+  background: transparent; color: var(--text); border: none; border-bottom: 1px solid var(--border); border-radius: 0; font-weight: 400;
+}
+.bell-panel li button:hover:not(:disabled) { background: #f4f7fb; }
+.bell-panel li button.unread { background: #f0f6ff; box-shadow: inset 3px 0 0 var(--si-blue); }
+.bell-panel li span { font-size: 0.85rem; color: var(--muted); }
+.bell-panel time { font-size: 0.75rem; color: var(--muted); }
+.bell-empty { padding: 1rem; margin: 0; }
+
+.hud-actions { display: grid; gap: 0.45rem; }
+.hud-button.secondary { background: transparent; color: var(--dk-accent); border: 1px solid var(--dk-accent); }
+.hud-button.secondary:hover { background: rgba(46, 230, 214, 0.1); }
+.hud-button.warn { background: #f5c400; color: #2a2000; }
+.hud-button.warn:hover { background: #ffd83d; }
+
+@media (max-width: 960px) {
+  .submission-grid { grid-template-columns: 1fr; }
+  .board { grid-template-columns: repeat(4, minmax(240px, 82vw)); scroll-snap-type: x mandatory; }
+  .board-col { scroll-snap-align: start; }
+}
+@media (max-width: 640px) {
+  .topbar-name { display: none; }
+  .budget-row, .budget-head { grid-template-columns: 1fr 1fr; }
+  .budget-head { display: none; }
+  .row-edit { grid-template-columns: 1fr; }
+  .action-bar { margin: 1rem -1rem -1rem; padding: 0.8rem 1rem; }
+  .card { padding: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
 }
 
 /* Tabel */

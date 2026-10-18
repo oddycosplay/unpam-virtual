@@ -95,7 +95,15 @@ function Rooms({ summary, viewerRole }: { summary: DashboardSummary; viewerRole:
       <HoloScreen
         position={[7.6, 1.75, -3.15]}
         size={[3, 1.1]}
-        content={{ kind: "text", title: "Agent HIMA", lines: ["Proposal kegiatan", "Aktif mulai tahap 3"] }}
+        content={{
+          kind: "stats",
+          title: "Papan tugas",
+          items: [
+            { label: "diproses", value: String(stats.tasks.diproses) },
+            { label: "menunggu", value: String(stats.tasks.menunggu_persetujuan), tone: stats.tasks.menunggu_persetujuan > 0 ? "warn" : undefined },
+            { label: "selesai", value: String(stats.tasks.selesai), tone: "ok" },
+          ],
+        }}
       />
 
       {/* Ruang Kaprodi (barat) */}
@@ -104,7 +112,7 @@ function Rooms({ summary, viewerRole }: { summary: DashboardSummary; viewerRole:
       <Desk position={[-8.1, 0.16, 0]} rotationY={Math.PI / 2} screens={1} />
       <Chair position={[-7.4, 0.16, 0]} rotationY={Math.PI / 2} />
       <Person position={[-7.4, 0.16, 0]} rotationY={-Math.PI / 2} colors={ROLE_COLORS("kaprodi")} seated />
-      <ApprovalGate position={[-5.6, 0.16, 0]} waiting={0} />
+      <ApprovalGate position={[-5.6, 0.16, 0]} waiting={stats.pendingApprovals} />
       <Plant position={[-9.4, 0.16, -2.7]} />
       <HoloScreen
         position={[-9.75, 1.6, -0.2]}
@@ -114,8 +122,8 @@ function Rooms({ summary, viewerRole }: { summary: DashboardSummary; viewerRole:
           kind: "stats",
           title: "Persetujuan",
           items: [
-            { label: "menunggu", value: "0", tone: "ok" },
-            { label: "hari ini", value: "0" },
+            { label: "menunggu", value: String(stats.pendingApprovals), tone: stats.pendingApprovals > 0 ? "warn" : "ok" },
+            { label: "diputus hari ini", value: String(stats.decidedToday) },
           ],
         }}
       />

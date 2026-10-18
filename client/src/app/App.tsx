@@ -8,6 +8,11 @@ import { LlmConfigPage } from "../features/admin/LlmConfigPage";
 import { DocumentsPage } from "../features/admin/DocumentsPage";
 import { ChatPage } from "../features/chat/ChatPage";
 import { RoleBadge } from "../components/ui/RoleBadge";
+import { NotificationBell } from "../features/notifications/NotificationBell";
+import { TasksPage } from "../features/tasks/TasksPage";
+import { WorkPage } from "../features/submissions/WorkPage";
+import { NewProposalPage } from "../features/submissions/NewProposalPage";
+import { SubmissionPage } from "../features/submissions/SubmissionPage";
 
 function Guard({ permission, fullBleed, children }: { permission?: Permission; fullBleed?: boolean; children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -32,6 +37,10 @@ function Shell({ fullBleed, children }: { fullBleed?: boolean; children: ReactNo
           <NavLink to="/" end>
             Dashboard
           </NavLink>
+          <NavLink to="/tugas">Papan Tugas</NavLink>
+          {user && (hasPermission(user.role, "proposal:create") || hasPermission(user.role, "submission:comment")) && (
+            <NavLink to="/hasil-kerja">Hasil Kerja</NavLink>
+          )}
           {user && hasPermission(user.role, "agent:chat") && <NavLink to="/chat">Agent Akademik</NavLink>}
           {user && hasPermission(user.role, "admin:documents") && <NavLink to="/admin/documents">Dokumen</NavLink>}
           {user && hasPermission(user.role, "admin:config") && <NavLink to="/admin/llm">Provider AI</NavLink>}
@@ -39,7 +48,8 @@ function Shell({ fullBleed, children }: { fullBleed?: boolean; children: ReactNo
         <div className="topbar-user">
           {user && (
             <>
-              <span>{user.name}</span>
+              <NotificationBell />
+              <span className="topbar-name">{user.name}</span>
               <RoleBadge role={user.role} />
               <button className="ghost" onClick={logout}>
                 Keluar
@@ -62,6 +72,38 @@ export function App() {
         element={
           <Guard fullBleed>
             <DashboardPage />
+          </Guard>
+        }
+      />
+      <Route
+        path="/tugas"
+        element={
+          <Guard>
+            <TasksPage />
+          </Guard>
+        }
+      />
+      <Route
+        path="/hasil-kerja"
+        element={
+          <Guard>
+            <WorkPage />
+          </Guard>
+        }
+      />
+      <Route
+        path="/proposal/baru"
+        element={
+          <Guard permission="proposal:create">
+            <NewProposalPage />
+          </Guard>
+        }
+      />
+      <Route
+        path="/pengajuan/:id"
+        element={
+          <Guard>
+            <SubmissionPage />
           </Guard>
         }
       />

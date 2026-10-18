@@ -97,11 +97,23 @@ export function DashboardPage() {
             </li>
           ))}
         </ul>
-        {canChat && (
-          <Link to="/chat" className="hud-button">
-            Tanya Agent Akademik
-          </Link>
-        )}
+        <div className="hud-actions">
+          {canChat && (
+            <Link to="/chat" className="hud-button">
+              Tanya Agent Akademik
+            </Link>
+          )}
+          {hasPermission(user.role, "proposal:create") && (
+            <Link to="/proposal/baru" className="hud-button secondary">
+              Minta proposal
+            </Link>
+          )}
+          {hasPermission(user.role, "submission:decide") && stats.pendingApprovals > 0 && (
+            <Link to="/hasil-kerja" className="hud-button warn">
+              {stats.pendingApprovals} proposal menunggu
+            </Link>
+          )}
+        </div>
       </aside>
 
       <aside className="dash-activity hud" aria-label="Aktivitas terbaru">
