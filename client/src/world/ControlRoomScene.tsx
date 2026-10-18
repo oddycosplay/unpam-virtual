@@ -15,6 +15,7 @@ import {
   Floor,
   GlassWall,
   Hub,
+  LobbyGate,
   Person,
   Plant,
   Roads,
@@ -35,7 +36,8 @@ function AutoZoom() {
   return null;
 }
 
-function Rooms({ summary, viewerRole }: { summary: DashboardSummary; viewerRole: Role }) {
+/** Seluruh ruangan dan perabot. viewerRole diisi untuk menampilkan avatar statis "Anda" (dashboard). */
+export function Rooms({ summary, viewerRole }: { summary: DashboardSummary; viewerRole?: Role }) {
   const { stats } = summary;
   const akademik = summary.agents.find((a) => a.id === "akademik");
   const latencySec = stats.avgLatencyMs === null ? null : stats.avgLatencyMs / 1000;
@@ -128,6 +130,11 @@ function Rooms({ summary, viewerRole }: { summary: DashboardSummary; viewerRole:
         }}
       />
 
+      {/* Gerbang & Lobby (selatan): titik masuk pemain kampus */}
+      <LobbyGate position={[-1.5, 0.16, 10.4]} />
+      <Plant position={[-3.6, 0.16, 8.1]} />
+      <Plant position={[0.6, 0.16, 8.1]} />
+
       {/* Kantin & Taman (barat daya) */}
       <Tree position={[-8.8, 0.16, 8.3]} />
       <Tree position={[-6.2, 0.16, 8.5]} />
@@ -165,7 +172,7 @@ function Rooms({ summary, viewerRole }: { summary: DashboardSummary; viewerRole:
           size={[2, 1.2]}
           content={{ kind: "gauge", title: "Waktu jawab", value: latencySec, max: 10, unit: " dtk", caption: "target < 10 dtk" }}
         />
-        <Person position={[-0.7, 0, 0.75]} rotationY={Math.PI} colors={ROLE_COLORS(viewerRole)} label="Anda" />
+        {viewerRole && <Person position={[-0.7, 0, 0.75]} rotationY={Math.PI} colors={ROLE_COLORS(viewerRole)} label="Anda" />}
         <Person position={[0.9, 0, 0.8]} rotationY={Math.PI + 0.3} colors={ROLE_COLORS("dosen")} />
       </group>
     </group>

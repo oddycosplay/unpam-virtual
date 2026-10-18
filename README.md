@@ -2,13 +2,25 @@
 
 Kampus virtual 3D Prodi Sistem Informasi Unpam dengan agent AI. Spesifikasi lengkap: [PRD Unpam Virtual (MVP).md](PRD%20Unpam%20Virtual%20(MVP).md).
 
-Status: **tahap 4 (Dashboard)** selesai.
+Status: **tahap 5 (Kampus 3D)** selesai.
 
 - Tahap 1: struktur proyek, SQLite, login, peran, dan LLM provider layer.
 - Tahap 2: chat Agent Akademik dengan RAG dokumen (SQLite FTS5) dan sumber ditampilkan.
 - Dashboard ruang kendali 3D (bagian dari tahap 4–5, dikerjakan lebih awal).
 - Tahap 3: papan tugas, Agent HIMA menyusun proposal, alur persetujuan Kaprodi, dan notifikasi.
 - Tahap 4: sidebar navigasi dengan status agent, dan halaman Log Audit.
+- Tahap 5: kampus 3D multiplayer dengan avatar, minimap, dan proximity chat.
+
+## Kampus 3D (multiplayer)
+
+Menu **Kampus 3D** (`/kampus`) membuka kampus yang bisa dijelajahi bersama:
+
+- Tujuh area PRD §7: Gerbang & Lobby (titik muncul), Ruang Akademik & Dosen, Sekretariat HIMA, Ruang Kaprodi, Perpustakaan, Kantin & Taman, dan hub Orkestrator. Avatar berwarna sesuai peran.
+- Berjalan dengan **WASD/panah** (relatif arah kamera), **klik lantai**, atau **klik minimap**. Ada tabrakan sederhana dengan dinding dan perabot. Kamera isometrik mengikuti avatar dan bisa diputar/di-zoom.
+- Multiplayer real-time lewat **Socket.IO** (`/socket.io`, memakai cookie sesi yang sama). Posisi disiarkan 10×/detik, status agent didorong saat berubah. Maksimal 60 koneksi.
+- **Proximity chat**: pesan hanya dikirim server ke pemain dalam radius 6 m (dihitung dari posisi di server), maks. 280 karakter, 1 pesan/detik. Pesan muncul sebagai gelembung di atas avatar dan **tidak disimpan** di database.
+- Robot agent bergerak sesuai status (Running ke meja, Waiting Approval ke gerbang Kaprodi, Idle ke kantin). Klik Agent Akademik untuk membuka panel chat tanpa meninggalkan kampus.
+- Dari perangkat lain di Wi-Fi yang sama, buka `http://<IP-laptop>:5173/kampus` (proxy Vite meneruskan WebSocket).
 
 ## Navigasi dan log audit
 

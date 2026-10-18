@@ -16,6 +16,7 @@ import { WorkPage } from "../features/submissions/WorkPage";
 import { NewProposalPage } from "../features/submissions/NewProposalPage";
 import { SubmissionPage } from "../features/submissions/SubmissionPage";
 import { Sidebar } from "./Sidebar";
+import { CampusPage } from "../features/campus/CampusPage";
 
 /** Halaman yang hanya untuk peran tertentu. */
 function Allow({ permission, children }: { permission: Permission; children: ReactNode }) {
@@ -31,10 +32,12 @@ function Layout() {
   const { user, loading, logout } = useAuth();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const fullBleed = location.pathname === "/";
+  const fullBleed = location.pathname === "/" || location.pathname === "/kampus";
 
   // Tutup laci menu (mobile) saat pindah halaman atau menekan Escape.
-  useEffect(() => setMenuOpen(false), [location.pathname]);
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
   useEffect(() => {
     if (!menuOpen) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
@@ -88,6 +91,7 @@ export function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route element={<Layout />}>
         <Route index element={<DashboardPage />} />
+        <Route path="kampus" element={<CampusPage />} />
         <Route path="tugas" element={<TasksPage />} />
         <Route path="hasil-kerja" element={<WorkPage />} />
         <Route

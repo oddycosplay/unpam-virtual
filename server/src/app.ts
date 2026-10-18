@@ -15,6 +15,7 @@ import { dashboardRoutes } from "./modules/dashboard/routes";
 import { submissionRoutes } from "./modules/submissions/routes";
 import { taskRoutes } from "./modules/tasks/routes";
 import { auditRoutes } from "./modules/audit/routes";
+import { attachCampus } from "./realtime/campus";
 import { AgentRuntime } from "./agents/runtime";
 import { JobTracker } from "./agents/jobs";
 
@@ -55,6 +56,7 @@ export async function buildApp(
   submissionRoutes(app, ctx);
   taskRoutes(app, ctx);
   auditRoutes(app, ctx);
+  attachCampus(app, ctx);
 
   app.addHook("onClose", async () => ctx.jobs.idle());
   return app;

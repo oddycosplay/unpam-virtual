@@ -365,6 +365,28 @@ export function CafeTable({ position }: { position: [number, number, number] }) 
   );
 }
 
+/** Gapura kampus di Gerbang & Lobby, dengan papan nama bercahaya. */
+export function LobbyGate({ position }: { position: [number, number, number] }) {
+  return (
+    <group position={position}>
+      {[-1.9, 1.9].map((x) => (
+        <mesh key={x} position={[x, 1.1, 0]} castShadow>
+          <boxGeometry args={[0.35, 2.2, 0.35]} />
+          <meshStandardMaterial color={COLORS.siBlue} roughness={0.5} />
+        </mesh>
+      ))}
+      <mesh position={[0, 2.35, 0]} castShadow>
+        <boxGeometry args={[4.3, 0.4, 0.4]} />
+        <meshStandardMaterial color={COLORS.siBlue} roughness={0.5} />
+      </mesh>
+      <mesh position={[0, 2.35, 0.21]}>
+        <boxGeometry args={[3.6, 0.12, 0.02]} />
+        {glowMaterial(COLORS.siYellow, 1.6)}
+      </mesh>
+    </group>
+  );
+}
+
 /** Gerbang persetujuan di depan Ruang Kaprodi. */
 export function ApprovalGate({ position, waiting }: { position: [number, number, number]; waiting: number }) {
   return (

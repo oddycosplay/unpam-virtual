@@ -2,6 +2,7 @@
 const PATHS = {
   dashboard: "M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z",
   board: "M4 4h4v16H4zM10 4h4v10h-4zM16 4h4v13h-4z",
+  campus: "M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Zm0 9v9m0-9 8-4.5M12 12 4 7.5",
   work: "M7 3h8l4 4v14H7zM15 3v4h4M10 12h6M10 16h6",
   chat: "M4 5h16v10H9l-5 4V5Z",
   documents: "M6 3h9l4 4v14H6zM15 3v4h4M9 11h7M9 15h7",

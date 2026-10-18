@@ -16,7 +16,9 @@ export function DocumentsPage() {
   function load() {
     api<{ documents: KnowledgeDocumentView[] }>("/api/admin/documents").then((r) => setDocs(r.documents));
   }
-  useEffect(load, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   async function onUpload(e: FormEvent) {
     e.preventDefault();

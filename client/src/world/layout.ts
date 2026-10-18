@@ -56,6 +56,7 @@ export const ZONES: Zone[] = [
   { id: "kaprodi", name: "Ruang Kaprodi", center: [-7.6, 0], size: [4.4, 6.4], accent: COLORS.siYellow },
   { id: "perpustakaan", name: "Perpustakaan", center: [7.2, -7.2], size: [4.6, 4], accent: "#58a6ff" },
   { id: "kantin", name: "Kantin & Taman", center: [-7.2, 7], size: [4.6, 4], accent: "#5ee08a" },
+  { id: "lobby", name: "Gerbang & Lobby", center: [-1.5, 9.1], size: [5, 2.8], accent: COLORS.siBlue },
 ];
 
 // Graf jalan: agent hanya bergerak di sepanjang jalur bercahaya.
@@ -72,6 +73,7 @@ export const NODES = {
   kaprodiGate: [-5.1, 0],
   kantin: [-5.2, 5.2],
   komando: [3.7, 3.7],
+  lobby: [-1.5, 7.4],
 } satisfies Record<string, Vec2>;
 
 export type NodeId = keyof typeof NODES;
@@ -88,7 +90,66 @@ export const EDGES: [NodeId, NodeId][] = [
   ["west", "kaprodiGate"],
   ["south", "kantin"],
   ["hub", "komando"],
+  ["south", "lobby"],
 ];
+
+/** Penghalang untuk tabrakan pemain: persegi panjang [cx, cz, lebarX, lebarZ]. */
+export type Rect = [cx: number, cz: number, w: number, d: number];
+
+export const OBSTACLES: Rect[] = [
+  // Dinding & kaca
+  [0, -9.3, 8, 0.3],
+  [-4, -7.2, 0.2, 4],
+  [4, -7.2, 0.2, 4],
+  [7.6, -3.3, 4.4, 0.3],
+  [9.8, 0, 0.2, 6.4],
+  [-9.9, 0, 0.3, 6.4],
+  [-7.6, 3.2, 4.4, 0.2],
+  // Meja & lemari
+  [-2.4, -7.6, 1.5, 0.7],
+  [2.4, -7.6, 1.5, 0.7],
+  [0, -6.2, 1.5, 0.7],
+  [7.2, -8.9, 4.2, 0.5],
+  [7.9, -1.9, 1.5, 0.7],
+  [7.9, 1.4, 1, 1],
+  [-8.1, 0, 0.7, 1.5],
+  [-7.6, 6.4, 1, 1],
+  [-5.9, 7.2, 1, 1],
+  // Hub Orkestrator dan meja komando
+  [0, 0, 3, 3],
+  [5.7, 5.7, 2.8, 2.8],
+  // Tiang gerbang Kaprodi dan gerbang lobby
+  [-5.6, 0.75, 0.3, 0.3],
+  [-5.6, -0.75, 0.3, 0.3],
+  [-3.4, 10.4, 0.4, 0.4],
+  [0.4, 10.4, 0.4, 0.4],
+];
+
+const PLAYER_RADIUS = 0.3;
+
+function blocked(x: number, z: number): boolean {
+  return OBSTACLES.some(([cx, cz, w, d]) => Math.abs(x - cx) < w / 2 + PLAYER_RADIUS && Math.abs(z - cz) < d / 2 + PLAYER_RADIUS);
+}
+
+/** Geser dari (x,z) sejauh (dx,dz) dengan tabrakan; meluncur di sepanjang dinding bila menabrak. */
+export function moveWithCollision(
+  x: number,
+  z: number,
+  dx: number,
+  dz: number,
+  bounds: { minX: number; maxX: number; minZ: number; maxZ: number },
+): [number, number] {
+  const clampX = (v: number) => Math.min(bounds.maxX, Math.max(bounds.minX, v));
+  const clampZ = (v: number) => Math.min(bounds.maxZ, Math.max(bounds.minZ, v));
+  let nx = clampX(x + dx);
+  let nz = clampZ(z + dz);
+  if (!blocked(nx, nz)) return [nx, nz];
+  nx = clampX(x + dx);
+  if (!blocked(nx, z)) return [nx, z];
+  nz = clampZ(z + dz);
+  if (!blocked(x, nz)) return [x, nz];
+  return [x, z];
+}
 
 /** Rute terpendek (BFS, graf kecil) dari satu node ke node lain. */
 export function route(from: NodeId, to: NodeId): NodeId[] {
