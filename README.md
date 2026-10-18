@@ -1,6 +1,6 @@
-[![CI](https://github.com/oddycosplay/unpam-virtual/actions/workflows/ci.yml/badge.svg)](https://github.com/oddycosplay/unpam-virtual/actions)
+[![CI](https://github.com/oddycosplay/unpam-virtual/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/oddycosplay/unpam-virtual/actions/workflows/node.js.yml)
 [![Release](https://img.shields.io/badge/release-v0.1.0-blue.svg)](https://github.com/oddycosplay/unpam-virtual/releases)
-[![License](https://img.shields.io/badge/license-UNSPECIFIED-lightgrey.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-UNSPECIFIED-lightgrey.svg)](#lisensi)
 [![Stars](https://img.shields.io/github/stars/oddycosplay/unpam-virtual?style=social)](https://github.com/oddycosplay/unpam-virtual/stargazers)
 
 # Unpam Virtual
@@ -39,7 +39,7 @@ Unpam Virtual adalah platform web yang menggabungkan kampus 3D interaktif, agen 
 ## Quick start (pengembang)
 
 Prasyarat:
-- Node.js 20+
+- Node.js 22.12+ (diuji di 22 dan 24)
 - npm
 
 Jalankan:
