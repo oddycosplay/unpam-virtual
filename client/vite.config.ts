@@ -6,8 +6,9 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      "/api": "http://localhost:3001",
-      "/socket.io": { target: "http://localhost:3001", ws: true },
+      // xfwd: kirim X-Forwarded-Host/Proto agar server bisa mencocokkan Origin dengan host asli (cek CSRF).
+      "/api": { target: "http://localhost:3001", xfwd: true },
+      "/socket.io": { target: "http://localhost:3001", ws: true, xfwd: true },
     },
   },
 });

@@ -31,7 +31,23 @@ export const users = sqliteTable("users", {
     .notNull()
     .references(() => roles.id),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
+  /** Naik setiap password/peran/status berubah; sesi dengan versi lama ditolak. */
+  tokenVersion: integer("token_version").notNull().default(0),
+  /** True setelah admin membuat akun atau mereset password (password sementara). */
+  mustChangePassword: integer("must_change_password", { mode: "boolean" }).notNull().default(false),
+  /** Batas token AI per hari untuk pengguna ini; null = pakai batas global. */
+  dailyTokenLimit: integer("daily_token_limit"),
   createdAt: createdAt(),
+});
+
+/** Pengaturan aplikasi yang bisa diubah admin (key-value). */
+export const appSettings = sqliteTable("app_settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedByUserId: integer("updated_by_user_id").references(() => users.id),
+  updatedAt: text("updated_at")
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
 });
 
 /** Jejak audit: siapa meminta, apa yang dilakukan, siapa menyetujui (PRD §6). */

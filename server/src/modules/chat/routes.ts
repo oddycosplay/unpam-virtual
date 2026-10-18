@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { ChatMessageView, ChatReply } from "@unpam/shared";
 import type { AppContext } from "../../app";
 import { AKADEMIK_AGENT_ID, AgentError, answerAkademik } from "../../agents/akademik";
+import { QUOTA_MESSAGE, hasQuota } from "../../agents/quota";
 import { audit } from "../../audit/log";
 import { requirePermission } from "../../auth/auth";
 import { chatMessages } from "../../db/schema";
@@ -27,7 +28,7 @@ function toView(row: typeof chatMessages.$inferSelect): ChatMessageView {
   };
 }
 
-export function chatRoutes(app: FastifyInstance, { db, llm, agents }: AppContext): void {
+export function chatRoutes(app: FastifyInstance, { db, config, llm, agents }: AppContext): void {
   const guard = { preHandler: requirePermission("agent:chat") };
 
   app.get<{ Params: { agentId: string } }>("/api/agents/:agentId/messages", guard, async (request, reply) => {
@@ -50,6 +51,12 @@ export function chatRoutes(app: FastifyInstance, { db, llm, agents }: AppContext
     if (!body.success) return reply.code(400).send({ error: body.error.issues[0]?.message ?? "Pesan tidak valid" });
 
     const user = request.user!;
+    const quota = hasQuota(db, config, user.id);
+    if (!quota.ok) {
+      audit(db, { actorType: "agent", actorAgent: agentId, actorUserId: user.id, action: "agent.quota_exceeded", details: { ...quota.usage } });
+      return reply.code(429).send({ error: QUOTA_MESSAGE });
+    }
+
     const history = db
       .select()
       .from(chatMessages)

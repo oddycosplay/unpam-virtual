@@ -16,6 +16,14 @@ const EnvSchema = z.object({
   LLM_API_KEY: z.string().default(""),
   LLM_MODEL: z.string().default("claude-opus-5-5"),
   SEED_PASSWORD: z.string().default("unpam123"),
+  /** auto = Secure hanya saat diakses lewat HTTPS; true/false untuk memaksa. */
+  COOKIE_SECURE: z.enum(["auto", "true", "false"]).default("auto"),
+  /** Batas token AI harian per pengguna bila admin belum mengaturnya di panel. */
+  DAILY_TOKEN_LIMIT: z.coerce.number().int().positive().default(100_000),
+  BACKUP_DIR: z.string().default("./data/backups"),
+  BACKUP_KEEP: z.coerce.number().int().min(1).max(90).default(7),
+  /** Backup otomatis tiap N jam (0 = mati). */
+  BACKUP_INTERVAL_HOURS: z.coerce.number().min(0).default(24),
   /** Putaran bcrypt untuk hash password. Tes memakai nilai kecil agar cepat. */
   BCRYPT_ROUNDS: z.coerce.number().int().min(4).max(14).default(10),
 });
@@ -32,5 +40,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   if (config.DB_PATH !== ":memory:" && !path.isAbsolute(config.DB_PATH)) {
     config.DB_PATH = path.resolve(REPO_ROOT, config.DB_PATH);
   }
+  if (!path.isAbsolute(config.BACKUP_DIR)) config.BACKUP_DIR = path.resolve(REPO_ROOT, config.BACKUP_DIR);
   return config;
 }

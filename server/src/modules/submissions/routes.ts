@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import type { AppContext } from "../../app";
 import { parseProposal } from "../../agents/hima";
+import { QUOTA_MESSAGE, hasQuota } from "../../agents/quota";
 import { audit } from "../../audit/log";
 import { requireAuth, requirePermission } from "../../auth/auth";
 import { approvals, submissionComments, submissions } from "../../db/schema";
@@ -56,6 +57,15 @@ function emptyToUndefined(body: unknown): unknown {
 export function submissionRoutes(app: FastifyInstance, ctx: AppContext): void {
   const { db } = ctx;
 
+  /** Cek kuota AI harian; catat di audit bila habis. */
+  function quotaOk(userId: number): boolean {
+    const quota = hasQuota(db, ctx.config, userId);
+    if (!quota.ok) {
+      audit(db, { actorType: "agent", actorAgent: "hima", actorUserId: userId, action: "agent.quota_exceeded", details: { ...quota.usage } });
+    }
+    return quota.ok;
+  }
+
   /** Ambil pengajuan bila boleh dilihat; kirim 404 bila tidak (tanpa membocorkan keberadaannya). */
   function load(id: string, request: FastifyRequest, reply: FastifyReply) {
     const row = db.select().from(submissions).where(eq(submissions.id, Number(id))).get();
@@ -69,6 +79,7 @@ export function submissionRoutes(app: FastifyInstance, ctx: AppContext): void {
   app.post("/api/proposals", { preHandler: requirePermission("proposal:create") }, async (request, reply) => {
     const body = BriefBody.safeParse(emptyToUndefined(request.body));
     if (!body.success) return reply.code(400).send({ error: firstIssue(body.error) });
+    if (!quotaOk(request.user!.id)) return reply.code(429).send({ error: QUOTA_MESSAGE });
     const row = createProposalRequest(ctx, request.user!, body.data);
     return reply.code(202).send({ submission: getDetail(db, row, request.user!) });
   });
@@ -203,6 +214,7 @@ export function submissionRoutes(app: FastifyInstance, ctx: AppContext): void {
     const row = load(request.params.id, request, reply);
     if (!row) return reply;
     if (!getDetail(db, row, request.user!).can.retry || !row.brief) return reply.code(409).send({ error: "Tidak ada yang perlu diulang" });
+    if (!quotaOk(request.user!.id)) return reply.code(429).send({ error: QUOTA_MESSAGE });
     setStatus(db, row.id, "menyusun", { error: null });
     runDraftJob(ctx, row.id, request.user!.id, row.brief);
     const fresh = db.select().from(submissions).where(eq(submissions.id, row.id)).get()!;

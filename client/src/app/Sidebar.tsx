@@ -31,9 +31,11 @@ const GROUPS: { title: string; items: Item[] }[] = [
   {
     title: "Admin",
     items: [
+      { to: "/admin/users", label: "Kelola Akun", icon: "users", any: ["admin:users"] },
       { to: "/admin/documents", label: "Dokumen", icon: "documents", any: ["admin:documents"] },
       { to: "/admin/audit", label: "Log Audit", icon: "audit", any: ["audit:view"] },
       { to: "/admin/llm", label: "Provider AI", icon: "provider", any: ["admin:config"] },
+      { to: "/admin/backup", label: "Backup", icon: "backup", any: ["admin:config"] },
     ],
   },
 ];

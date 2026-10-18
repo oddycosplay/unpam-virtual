@@ -6,6 +6,8 @@ export interface PublicUser {
   email: string;
   name: string;
   role: Role;
+  /** Masih memakai password sementara dari admin. */
+  mustChangePassword?: boolean;
 }
 
 export interface LoginRequest {
@@ -276,6 +278,38 @@ export interface AuditPage {
   total: number;
   /** Kirim sebagai `before` untuk halaman berikutnya; null bila sudah habis. */
   nextBefore: number | null;
+}
+
+// ---------- Admin, kuota, backup (tahap 6) ----------
+
+export interface UsageView {
+  /** Token AI terpakai hari ini (input + output). */
+  used: number;
+  input: number;
+  output: number;
+  limit: number;
+  /** Sumber batas: khusus pengguna, pengaturan admin, atau default .env. */
+  limitSource: "user" | "setting" | "env";
+}
+
+export interface AdminUserView extends PublicUser {
+  isActive: boolean;
+  mustChangePassword: boolean;
+  dailyTokenLimit: number | null;
+  usage: UsageView;
+  createdAt: string;
+}
+
+export interface AppSettingsView {
+  dailyTokenLimit: number;
+  dailyTokenLimitSource: "setting" | "env";
+}
+
+export interface BackupView {
+  name: string;
+  sizeBytes: number;
+  createdAt: string;
+  kind: "otomatis" | "manual";
 }
 
 export interface ApiError {

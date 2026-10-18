@@ -259,6 +259,22 @@ function TargetMarker({ targetRef }: { targetRef: MutableRefObject<FloorTarget |
   );
 }
 
+/** Hitung FPS tiap detik dan laporkan lewat callback (tanpa memicu render React). */
+function FpsMeter({ onFps }: { onFps: (fps: number) => void }) {
+  const frames = useRef(0);
+  const since = useRef(performance.now());
+  useFrame(() => {
+    frames.current++;
+    const now = performance.now();
+    if (now - since.current >= 1000) {
+      onFps(Math.round((frames.current * 1000) / (now - since.current)));
+      frames.current = 0;
+      since.current = now;
+    }
+  });
+  return null;
+}
+
 /** Zoom awal agar sekitar 14 m terlihat, menyesuaikan ukuran layar. */
 function InitialZoom() {
   const { size, camera } = useThree();
@@ -283,6 +299,7 @@ export function CampusScene({
   reducedMotion,
   onMove,
   onSelectAgent,
+  onFps,
 }: {
   summary: DashboardSummary;
   agents: AgentStatusView[];
@@ -296,6 +313,7 @@ export function CampusScene({
   reducedMotion: boolean;
   onMove: (s: SelfState) => void;
   onSelectAgent: (id: string) => void;
+  onFps?: (fps: number) => void;
 }) {
   const start = selfRef.current;
   const shownAgents = agents.length ? agents : summary.agents;
@@ -306,6 +324,7 @@ export function CampusScene({
       <color attach="background" args={["#0a1016"]} />
       <OrthographicCamera makeDefault position={[start.x + 12, 13, start.z + 12]} near={-50} far={200} zoom={40} />
       <InitialZoom />
+      {onFps && <FpsMeter onFps={onFps} />}
       <OrbitControls
         makeDefault
         target={[start.x, 0, start.z]}

@@ -7,6 +7,8 @@ interface AuthState {
   loading: boolean;
   login(email: string, password: string): Promise<void>;
   logout(): Promise<void>;
+  /** Perbarui data pengguna (mis. setelah ganti password). */
+  setUser(user: PublicUser): void;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -53,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
-  return <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, loading, login, logout, setUser }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthState {

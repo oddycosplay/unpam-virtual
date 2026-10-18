@@ -50,6 +50,13 @@ export function CampusPage() {
   const [agentPanel, setAgentPanel] = useState(false);
   const chatInput = useRef<HTMLInputElement>(null);
   const logEnd = useRef<HTMLLIElement>(null);
+  const fpsEl = useRef<HTMLSpanElement>(null);
+  // FPS ditulis langsung ke DOM agar tidak me-render ulang halaman tiap detik.
+  const showFps = useCallback((fps: number) => {
+    if (!fpsEl.current) return;
+    fpsEl.current.textContent = `· ${fps} FPS`;
+    fpsEl.current.dataset.low = fps < 30 ? "true" : "false";
+  }, []);
 
   // Posisi awal dari server sebelum scene dibuat.
   useEffect(() => {
@@ -141,6 +148,7 @@ export function CampusPage() {
                 reducedMotion={reducedMotion}
                 onMove={campus.sendMove}
                 onSelectAgent={onSelectAgent}
+                onFps={showFps}
               />
             </Suspense>
           ) : (
@@ -153,6 +161,7 @@ export function CampusPage() {
         <span className={`conn conn-${campus.connection}`} aria-hidden />
         <span>{CONNECTION_TEXT[campus.connection]}</span>
         <span className="hud-muted">· {campus.playerIds.length} pemain di kampus</span>
+        <span className="hud-muted fps" ref={fpsEl} title="Frame per detik (target PRD: 30+)" />
       </div>
 
       <div className="campus-help hud">

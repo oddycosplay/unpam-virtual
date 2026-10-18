@@ -17,6 +17,9 @@ import { NewProposalPage } from "../features/submissions/NewProposalPage";
 import { SubmissionPage } from "../features/submissions/SubmissionPage";
 import { Sidebar } from "./Sidebar";
 import { CampusPage } from "../features/campus/CampusPage";
+import { AccountPage } from "../features/account/AccountPage";
+import { UsersPage } from "../features/admin/UsersPage";
+import { BackupPage } from "../features/admin/BackupPage";
 
 /** Halaman yang hanya untuk peran tertentu. */
 function Allow({ permission, children }: { permission: Permission; children: ReactNode }) {
@@ -70,13 +73,20 @@ function Layout() {
           </Link>
           <div className="topbar-user">
             <NotificationBell />
-            <span className="topbar-name">{user.name}</span>
-            <RoleBadge role={user.role} />
+            <Link to="/akun" className="topbar-account" title="Akun saya">
+              <span className="topbar-name">{user.name}</span>
+              <RoleBadge role={user.role} />
+            </Link>
             <button className="ghost" onClick={logout}>
               Keluar
             </button>
           </div>
         </header>
+        {user.mustChangePassword && location.pathname !== "/akun" && (
+          <p className="password-banner" role="status">
+            Anda masih memakai password sementara. <Link to="/akun">Ganti password sekarang</Link>
+          </p>
+        )}
         <main className={fullBleed ? "page-full" : "page"}>
           <Outlet />
         </main>
@@ -92,6 +102,23 @@ export function App() {
       <Route element={<Layout />}>
         <Route index element={<DashboardPage />} />
         <Route path="kampus" element={<CampusPage />} />
+        <Route path="akun" element={<AccountPage />} />
+        <Route
+          path="admin/users"
+          element={
+            <Allow permission="admin:users">
+              <UsersPage />
+            </Allow>
+          }
+        />
+        <Route
+          path="admin/backup"
+          element={
+            <Allow permission="admin:config">
+              <BackupPage />
+            </Allow>
+          }
+        />
         <Route path="tugas" element={<TasksPage />} />
         <Route path="hasil-kerja" element={<WorkPage />} />
         <Route

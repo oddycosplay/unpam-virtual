@@ -18,6 +18,8 @@ import { auditRoutes } from "./modules/audit/routes";
 import { attachCampus } from "./realtime/campus";
 import { AgentRuntime } from "./agents/runtime";
 import { JobTracker } from "./agents/jobs";
+import { LoginLimiter, registerSecurity } from "./auth/security";
+import { backupRoutes } from "./modules/backup/routes";
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
@@ -29,6 +31,7 @@ export interface AppContext {
   agents: AgentRuntime;
   /** Pekerjaan agent di latar belakang (mis. menyusun proposal). */
   jobs: JobTracker;
+  loginLimiter: LoginLimiter;
 }
 
 export async function buildApp(
@@ -40,10 +43,12 @@ export async function buildApp(
     llm: base.llm ?? (() => getLlmProvider(base.db, base.config)),
     agents: new AgentRuntime(),
     jobs: base.jobs ?? new JobTracker(),
+    loginLimiter: new LoginLimiter(),
   };
   const app = Fastify({ logger: opts.logger ?? false });
   await app.register(cookie);
   await app.register(multipart, { limits: { fileSize: MAX_UPLOAD_BYTES, files: 1 } });
+  registerSecurity(app);
   registerAuth(app, ctx.db, ctx.config.JWT_SECRET);
 
   app.get("/api/health", async () => ({ ok: true }));
@@ -56,6 +61,7 @@ export async function buildApp(
   submissionRoutes(app, ctx);
   taskRoutes(app, ctx);
   auditRoutes(app, ctx);
+  backupRoutes(app, ctx);
   attachCampus(app, ctx);
 
   app.addHook("onClose", async () => ctx.jobs.idle());

@@ -17,41 +17,51 @@ declare module "fastify" {
 interface SessionPayload {
   sub: number;
   role: Role;
+  /** users.token_version saat login; sesi batal bila versi di DB sudah naik. */
+  ver: number;
 }
 
-export function signSession(user: PublicUser, secret: string): string {
-  const payload: SessionPayload = { sub: user.id, role: user.role };
+type UserRow = typeof users.$inferSelect;
+
+export function signSession(row: UserRow, secret: string): string {
+  const payload: SessionPayload = { sub: row.id, role: row.roleId, ver: row.tokenVersion };
   return jwt.sign(payload, secret, { expiresIn: SESSION_TTL_SECONDS });
 }
 
-export function setSessionCookie(reply: FastifyReply, token: string): void {
+/** Pakai cookie Secure bila COOKIE_SECURE=true, atau otomatis bila permintaan datang lewat HTTPS. */
+export function setSessionCookie(reply: FastifyReply, token: string, secure: boolean): void {
   reply.setCookie(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
     maxAge: SESSION_TTL_SECONDS,
-    // Diakses lewat http di LAN; aktifkan secure saat sudah memakai HTTPS (tahap 6).
-    secure: false,
+    secure,
   });
 }
 
-export function toPublicUser(row: typeof users.$inferSelect): PublicUser {
-  return { id: row.id, email: row.email, name: row.name, role: row.roleId };
+export function toPublicUser(row: UserRow): PublicUser {
+  return { id: row.id, email: row.email, name: row.name, role: row.roleId, mustChangePassword: row.mustChangePassword };
+}
+
+/** Verifikasi token sesi dan kembalikan baris pengguna yang masih aktif dengan versi sesi yang sama. */
+export function resolveSession(db: Db, token: string | undefined, secret: string): UserRow | null {
+  if (!token) return null;
+  try {
+    const payload = jwt.verify(token, secret) as unknown as SessionPayload;
+    const row = db.select().from(users).where(eq(users.id, Number(payload.sub))).get();
+    if (!row?.isActive || (payload.ver ?? 0) !== row.tokenVersion) return null;
+    return row;
+  } catch {
+    return null; // kedaluwarsa atau rusak
+  }
 }
 
 /** Membaca cookie sesi di setiap request. User diambil ulang dari DB agar peran/status selalu terbaru. */
 export function registerAuth(app: FastifyInstance, db: Db, secret: string): void {
   app.decorateRequest("user", null);
   app.addHook("onRequest", async (request) => {
-    const token = request.cookies[SESSION_COOKIE];
-    if (!token) return;
-    try {
-      const payload = jwt.verify(token, secret) as unknown as SessionPayload;
-      const row = db.select().from(users).where(eq(users.id, Number(payload.sub))).get();
-      if (row?.isActive) request.user = toPublicUser(row);
-    } catch {
-      // Token kedaluwarsa/rusak: anggap belum login.
-    }
+    const row = resolveSession(db, request.cookies[SESSION_COOKIE], secret);
+    if (row) request.user = toPublicUser(row);
   });
 }
 

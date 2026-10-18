@@ -1,7 +1,5 @@
 import type { FastifyInstance } from "fastify";
 import { randomUUID } from "node:crypto";
-import jwt from "jsonwebtoken";
-import { eq } from "drizzle-orm";
 import { Server } from "socket.io";
 import {
   CAMPUS_BOUNDS,
@@ -15,8 +13,7 @@ import {
 } from "@unpam/shared";
 import type { AppContext } from "../app";
 import { currentAgentViews } from "../agents/status";
-import { SESSION_COOKIE, toPublicUser } from "../auth/auth";
-import { users } from "../db/schema";
+import { SESSION_COOKIE, resolveSession, toPublicUser } from "../auth/auth";
 
 const ROOM = "campus";
 const SNAPSHOT_MS = 100;
@@ -54,26 +51,19 @@ export function attachCampus(app: FastifyInstance, ctx: AppContext): Server<Clie
 
   // Autentikasi memakai cookie sesi yang sama dengan API HTTP.
   io.use((socket, next) => {
-    const token = readCookie(socket.handshake.headers.cookie, SESSION_COOKIE);
-    if (!token) return next(new Error("unauthorized"));
-    try {
-      const payload = jwt.verify(token, ctx.config.JWT_SECRET) as unknown as { sub: number };
-      const row = ctx.db.select().from(users).where(eq(users.id, Number(payload.sub))).get();
-      if (!row?.isActive) return next(new Error("unauthorized"));
-      if (io.of("/").sockets.size >= MAX_PLAYERS) return next(new Error("full"));
-      const user = toPublicUser(row);
-      // Sebar sedikit di sekitar gerbang agar pemain baru tidak bertumpuk.
-      const x = SPAWN.x + (Math.random() - 0.5) * 1.6;
-      const z = SPAWN.z + (Math.random() - 0.5) * 0.6;
-      socket.data = {
-        user,
-        state: { id: socket.id, userId: user.id, name: user.name, role: user.role, x, z, rot: Math.PI, moving: false },
-        lastChatAt: 0,
-      };
-      next();
-    } catch {
-      next(new Error("unauthorized"));
-    }
+    const row = resolveSession(ctx.db, readCookie(socket.handshake.headers.cookie, SESSION_COOKIE), ctx.config.JWT_SECRET);
+    if (!row) return next(new Error("unauthorized"));
+    if (io.of("/").sockets.size >= MAX_PLAYERS) return next(new Error("full"));
+    const user = toPublicUser(row);
+    // Sebar sedikit di sekitar gerbang agar pemain baru tidak bertumpuk.
+    const x = SPAWN.x + (Math.random() - 0.5) * 1.6;
+    const z = SPAWN.z + (Math.random() - 0.5) * 0.6;
+    socket.data = {
+      user,
+      state: { id: socket.id, userId: user.id, name: user.name, role: user.role, x, z, rot: Math.PI, moving: false },
+      lastChatAt: 0,
+    };
+    next();
   });
 
   io.on("connection", (socket) => {

@@ -11,7 +11,8 @@
     "dev": "node scripts/ensure-env.mjs && concurrently -k -n server,client -c blue,yellow \"npm run dev -w server\" \"npm run dev -w client\"",
     "test": "npm run test -w server",
     "typecheck": "npm run typecheck -w server && npm run typecheck -w client",
-    "db:generate": "npm run db:generate -w server"
+    "db:generate": "npm run db:generate -w server",
+    "load-test": "node scripts/load-test.mjs"
   },
   "devDependencies": {
     "concurrently": "^10.0.6"
