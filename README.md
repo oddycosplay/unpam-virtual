@@ -1,106 +1,73 @@
+[![CI](https://github.com/oddycosplay/unpam-virtual/actions/workflows/ci.yml/badge.svg)](https://github.com/oddycosplay/unpam-virtual/actions)
+[![Release](https://img.shields.io/badge/release-v0.1.0-blue.svg)](https://github.com/oddycosplay/unpam-virtual/releases)
+[![License](https://img.shields.io/badge/license-UNSPECIFIED-lightgrey.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/oddycosplay/unpam-virtual?style=social)](https://github.com/oddycosplay/unpam-virtual/stargazers)
+
 # Unpam Virtual
 
 Kampus virtual 3D untuk Program Studi Sistem Informasi Universitas Pamulang (UNPAM) dengan integrasi agent AI, workflow akademik, dan simulasi ruang kampus multi-user.
 
-## Ringkasan proyek
+Versi saat ini: v0.1.0 — lihat juga CHANGELOG.md untuk catatan rilis.
 
-Unpam Virtual adalah platform web yang menggabungkan:
+## Ringkasan singkat
 
-- kampus 3D interaktif untuk eksplorasi virtual
-- dashboard manajemen akademik dan tugas
-- agent AI untuk membantu mahasiswa dan civitas akademika
-- sistem log audit, role-based access, dan dokumen akademik
-- komunikasi real-time antar pengguna dan agent
+Unpam Virtual adalah platform web yang menggabungkan kampus 3D interaktif, agen AI untuk layanan akademik, dan alat administrasi (proposal, persetujuan, log audit). Dirancang sebagai MVP untuk simulasikan lingkungan kampus modern berbasis web dan mudah dijalankan secara lokal untuk pengembangan.
 
-Proyek ini dirancang sebagai MVP untuk simulasi digital lingkungan kampus modern berbasis web.
+---
+
+## Mengapa proyek ini penting
+
+- Memfasilitasi prototyping pengalaman kampus virtual (pengajaran, open day, simulasi proses administrasi).
+- Menyediakan integrasi AI berbasis dokumen untuk mendukung layanan akademik.
+- Menjadi basis untuk eksperimen real-time multiplayer yang ringan.
+
+---
 
 ## Fitur utama
 
-### Kampus 3D dan multiplayer
+- Kampus 3D interaktif dan multi-user (Socket.IO)
+- Agent AI Akademik dengan RAG terhadap dokumen (SQLite FTS5)
+- Proximity chat dan avatar per peran
+- Workflow proposal HIMA → persetujuan Kaprodi
+- Log audit terperinci
 
-- eksplorasi kampus dengan kontrol WASD / panah / klik lantai / minimap
-- avatar per peran pengguna (mahasiswa, dosen, Kaprodi, admin, HIMA)
-- real-time multiplayer melalui Socket.IO
-- proximity chat dan interaksi lingkungan kampus
-- navigasi antar area seperti gerbang, lobby, ruang akademik, perpustakaan, kantin, dan ruang Kaprodi
+---
 
-### Agent AI Akademik
+## Quick start (pengembang)
 
-- pencarian jawaban dari dokumen akademik berbasis FTS SQLite
-- RAG untuk menjawab berdasarkan sumber dokumen yang relevan
-- rujukan sumber yang ditampilkan di hasil jawaban
-- sanitasi data sensitif seperti NIM, email, dan telepon sebelum dikirim ke provider AI
-- log audit untuk setiap interaksi
-
-### Workflow administrasi dan HIMA
-
-- pengajuan proposal kegiatan
-- alur persetujuan Kaprodi
-- revisi dan notifikasi status
-- papan tugas yang memantau progres proposal
-- log audit lengkap untuk transparansi
-
-### Sistem autentikasi dan izin
-
-- login berbasis sesi dan cookie
-- peran pengguna yang berbeda
-- kontrol fitur berdasarkan hak akses
-- panel admin untuk konfigurasi provider AI dan dokumentasi
-
-## Stack teknologi
-
-- Frontend: React + Vite + TypeScript
-- Rendering 3D: React Three Fiber, Drei, Three.js
-- Backend: Fastify + TypeScript
-- Database: SQLite + Drizzle ORM
-- Real-time: Socket.IO
-- AI: Anthropic/OpenAI-compatible APIs
-
-## Struktur proyek
-
-```text
-.
-├── client/              # aplikasi frontend
-├── packages/
-│   └── shared/          # tipe dan konstanta bersama
-├── scripts/             # utilitas skrip proyek
-├── server/              # backend Fastify + SQLite + AI layer
-├── .env.example         # contoh konfigurasi environment
-├── .gitignore
-├── package.json
-├── README.md
-├── CHANGELOG.md
-├── PRD Unpam Virtual (MVP).md
-└── tsconfig.base.json
-```
-
-## Persyaratan
-
+Prasyarat:
 - Node.js 20+
 - npm
-- Pada Windows, instal Visual Studio Build Tools + Python untuk kompilasi `better-sqlite3`
 
-## Menjalankan aplikasi
-
-1. Instal dependency:
+Jalankan:
 
 ```bash
 npm install
-```
-
-2. Jalankan aplikasi pengembangan:
-
-```bash
 npm run dev
 ```
 
-3. Buka browser:
+Buka http://localhost:5173
 
-```text
-http://localhost:5173
+Catatan: Pada Windows, `better-sqlite3` perlu alat build (Visual Studio Build Tools + Python).
+
+---
+
+## Struktur repository
+
+```
+.
+├── client/              # aplikasi frontend (React + Vite)
+├── packages/
+│   └── shared/          # tipe & konstanta bersama
+├── server/              # backend Fastify + SQLite + AI layer
+├── scripts/
+├── .env.example
+├── README.md
+├── CHANGELOG.md
+└── tsconfig.base.json
 ```
 
-Saat pertama kali dijalankan, aplikasi akan otomatis membuat file `.env` berdasarkan `.env.example` dan menyiapkan database SQLite serta data awal.
+---
 
 ## Akun demo
 
@@ -114,27 +81,33 @@ Semua akun demo memakai password dari variabel `SEED_PASSWORD` (default: `unpam1
 | kaprodi@unpam.test | Kaprodi |
 | admin@unpam.test | Admin |
 
-## Provider AI
+---
 
-Konfigurasi provider AI dapat dilakukan melalui panel admin atau melalui variabel `LLM_*` di `.env`.
+## Konfigurasi Provider AI
 
-- default: Anthropic
-- dukungan OpenAI-compatible endpoint, termasuk OpenRouter atau Ollama
-- API key disimpan terenkripsi di database
+Pengaturan melalui panel admin atau variabel `LLM_*` di `.env`. API key disimpan terenkripsi di database.
 
-## Dokumentasi tambahan
-
-- PRD lengkap: `PRD Unpam Virtual (MVP).md`
-- release notes: `CHANGELOG.md`
-
-## Status proyek
-
-Saat ini proyek berada pada tahap implementasi kampus 3D dengan fitur AI, autentikasi, log audit, dan workflow akademik yang siap dikembangkan lebih lanjut.
-
-## Lisensi
-
-Belum ditentukan. Silakan cek sebelum dipakai untuk publikasi atau distribusi komersial.
+- Default: Anthropic
+- Dukungan endpoint OpenAI-compatible (OpenRouter, Ollama)
 
 ---
 
-Kampus virtual 3D untuk Program Studi Sistem Informasi Universitas Pamulang (UNPAM) dengan integrasi AI, workflow akademik, dan simulasi ruang kampus multi-user.
+## Contributing
+
+1. Fork dan buat branch untuk fitur/bugfix: `git checkout -b feat/penjelasan-singkat`
+2. Tulis kode, tambahkan test jika perlu
+3. Buka pull request ke branch `main`
+
+Lihat juga `PRD Unpam Virtual (MVP).md` untuk spesifikasi fitur.
+
+---
+
+## Rilis & Changelog
+
+Release notes utama tersedia di `CHANGELOG.md`. Untuk membuat release GitHub formal, lihat `.github/release-draft.md` (draft yang bisa dipakai untuk membuat release di web).
+
+---
+
+## Lisensi
+
+Belum ditentukan. Jika Anda berencana membuka proyek ini ke publik, tambahkan file LICENSE.
