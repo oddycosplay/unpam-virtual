@@ -41,6 +41,15 @@ Atur lewat menu **Provider AI** (login sebagai admin) atau variabel `LLM_*` di `
 
 API key disimpan terenkripsi AES-256-GCM di database dan tidak pernah dikirim balik ke browser. Tombol **Uji koneksi** mengirim satu prompt pendek dan hasilnya tercatat di log audit.
 
+## Dashboard ruang kendali 3D
+
+Halaman utama setelah login adalah ruang kendali isometrik 3D (React Three Fiber, semua objek dari bentuk primitif):
+
+- Hub Orkestrator di tengah dengan jalur bercahaya ke Ruang Akademik & Dosen, Sekretariat HIMA, Ruang Kaprodi, Perpustakaan, dan Kantin & Taman.
+- Robot agent bergerak di sepanjang jalur sesuai statusnya (PRD §7): Running ke meja kerja, Waiting Approval ke gerbang Kaprodi, Idle ke kantin. Label di atasnya menampilkan nama, status, dan aktivitas. Klik Agent Akademik untuk membuka chat.
+- Layar hologram dan panel samping menampilkan data nyata dari `GET /api/dashboard` (diperbarui tiap 5 detik): pertanyaan dan jawaban hari ini, rata-rata waktu jawab, error, jawaban per jam, basis pengetahuan, dan aktivitas terbaru dari log audit. Aktivitas akun dan konfigurasi hanya terlihat oleh admin.
+- Seret untuk memutar, scroll atau cubit untuk zoom. Gerakan dikurangi bila sistem meminta *reduced motion*. Bila WebGL tidak tersedia, data tetap tampil di panel.
+
 ## Agent Akademik
 
 Menu **Agent Akademik** tersedia untuk mahasiswa, pengurus HIMA, dosen, dan Kaprodi.

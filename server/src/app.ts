@@ -11,6 +11,8 @@ import { userRoutes } from "./modules/users/routes";
 import { adminRoutes } from "./modules/admin/routes";
 import { chatRoutes } from "./modules/chat/routes";
 import { documentRoutes } from "./modules/documents/routes";
+import { dashboardRoutes } from "./modules/dashboard/routes";
+import { AgentRuntime } from "./agents/runtime";
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
@@ -19,13 +21,18 @@ export interface AppContext {
   config: AppConfig;
   /** Provider LLM aktif. Dibaca ulang tiap panggilan agar perubahan di panel admin langsung berlaku. */
   llm: () => LlmProvider;
+  agents: AgentRuntime;
 }
 
 export async function buildApp(
   base: { db: Db; config: AppConfig; llm?: () => LlmProvider },
   opts: { logger?: boolean } = {},
 ) {
-  const ctx: AppContext = { ...base, llm: base.llm ?? (() => getLlmProvider(base.db, base.config)) };
+  const ctx: AppContext = {
+    ...base,
+    llm: base.llm ?? (() => getLlmProvider(base.db, base.config)),
+    agents: new AgentRuntime(),
+  };
   const app = Fastify({ logger: opts.logger ?? false });
   await app.register(cookie);
   await app.register(multipart, { limits: { fileSize: MAX_UPLOAD_BYTES, files: 1 } });
@@ -37,6 +44,7 @@ export async function buildApp(
   adminRoutes(app, ctx);
   chatRoutes(app, ctx);
   documentRoutes(app, ctx);
+  dashboardRoutes(app, ctx);
 
   return app;
 }

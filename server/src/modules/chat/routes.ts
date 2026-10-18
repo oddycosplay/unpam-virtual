@@ -27,7 +27,7 @@ function toView(row: typeof chatMessages.$inferSelect): ChatMessageView {
   };
 }
 
-export function chatRoutes(app: FastifyInstance, { db, llm }: AppContext): void {
+export function chatRoutes(app: FastifyInstance, { db, llm, agents }: AppContext): void {
   const guard = { preHandler: requirePermission("agent:chat") };
 
   app.get<{ Params: { agentId: string } }>("/api/agents/:agentId/messages", guard, async (request, reply) => {
@@ -67,9 +67,12 @@ export function chatRoutes(app: FastifyInstance, { db, llm }: AppContext): void 
       .get();
 
     const started = Date.now();
+    agents.set("orkestrator", "completed", "Meneruskan pesan ke Agent Akademik");
+    agents.set("akademik", "running", "Menjawab pertanyaan akademik");
     let replyRow: typeof chatMessages.$inferSelect;
     try {
       const answer = await answerAkademik({ db, provider: llm, question: body.data.message, history });
+      agents.set("akademik", "completed", answer.usedLlm ? "Selesai menjawab" : "Tidak menemukan di dokumen");
       replyRow = db
         .insert(chatMessages)
         .values({ userId: user.id, agentId, role: "assistant", content: answer.text, sources: answer.sources })
@@ -93,6 +96,7 @@ export function chatRoutes(app: FastifyInstance, { db, llm }: AppContext): void 
       });
     } catch (error) {
       const message = error instanceof AgentError ? error.message : (error as Error).message;
+      agents.set("akademik", "error", "Gagal menjawab, dieskalasi ke admin");
       replyRow = db
         .insert(chatMessages)
         .values({ userId: user.id, agentId, role: "assistant", content: ESCALATION_TEXT, status: "error" })

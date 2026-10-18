@@ -1,4 +1,5 @@
 import type { Role } from "./roles";
+import type { AgentStatus } from "./status";
 
 export interface PublicUser {
   id: number;
@@ -74,6 +75,39 @@ export interface KnowledgeDocumentView {
   agentScope: string;
   chunkCount: number;
   createdAt: string;
+}
+
+export interface AgentStatusView {
+  id: "orkestrator" | "akademik" | "hima";
+  name: string;
+  status: AgentStatus;
+  /** Teks pendek untuk label di atas agent, mis. "Menjawab pertanyaan jadwal". */
+  activity: string;
+  active: boolean;
+}
+
+export interface ActivityItem {
+  id: number;
+  at: string;
+  /** Kalimat siap tampil, mis. "Agent Akademik menjawab pertanyaan (4,1 dtk)". */
+  text: string;
+  kind: "agent" | "user" | "system" | "error";
+}
+
+export interface DashboardSummary {
+  agents: AgentStatusView[];
+  stats: {
+    questionsToday: number;
+    answersToday: number;
+    errorsToday: number;
+    avgLatencyMs: number | null;
+    documents: number;
+    chunks: number;
+    users: number;
+  };
+  /** Jumlah jawaban agent per jam, 12 jam terakhir (index terakhir = jam ini). */
+  answersPerHour: number[];
+  recentActivity: ActivityItem[];
 }
 
 export interface ApiError {
