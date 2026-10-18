@@ -19,7 +19,7 @@ let app: Awaited<ReturnType<typeof buildApp>>;
 
 beforeEach(async () => {
   db = createDb(":memory:");
-  await seed(db, config.SEED_PASSWORD);
+  await seed(db, config.SEED_PASSWORD, 4);
   app = await buildApp({ db, config });
 });
 
@@ -58,7 +58,7 @@ describe("auth", () => {
     expect(me.json().user).toMatchObject({ email: "kaprodi@unpam.test", role: "kaprodi" });
   });
 
-  it("/me tanpa sesi → 401", async () => {
+  it("/me tanpa sesi â†’ 401", async () => {
     const me = await app.inject({ method: "GET", url: "/api/auth/me" });
     expect(me.statusCode).toBe(401);
   });
@@ -101,7 +101,7 @@ describe("konfigurasi LLM", () => {
     const row = db.select().from(llmProviderConfig).get();
     expect(row?.apiKeyEncrypted).not.toContain("key-abcd");
 
-    // Simpan ulang tanpa apiKey → key lama dipertahankan.
+    // Simpan ulang tanpa apiKey â†’ key lama dipertahankan.
     const res2 = await app.inject({
       method: "PUT",
       url: "/api/admin/llm-config",

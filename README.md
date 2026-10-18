@@ -2,12 +2,20 @@
 
 Kampus virtual 3D Prodi Sistem Informasi Unpam dengan agent AI. Spesifikasi lengkap: [PRD Unpam Virtual (MVP).md](PRD%20Unpam%20Virtual%20(MVP).md).
 
-Status: **tahap 3 (Papan tugas dan Agent HIMA)** selesai.
+Status: **tahap 4 (Dashboard)** selesai.
 
 - Tahap 1: struktur proyek, SQLite, login, peran, dan LLM provider layer.
 - Tahap 2: chat Agent Akademik dengan RAG dokumen (SQLite FTS5) dan sumber ditampilkan.
 - Dashboard ruang kendali 3D (bagian dari tahap 4–5, dikerjakan lebih awal).
 - Tahap 3: papan tugas, Agent HIMA menyusun proposal, alur persetujuan Kaprodi, dan notifikasi.
+- Tahap 4: sidebar navigasi dengan status agent, dan halaman Log Audit.
+
+## Navigasi dan log audit
+
+- Sidebar kiri menampilkan menu sesuai peran (Utama, Agent, Admin) dan status ketiga agent yang diperbarui tiap 10 detik (`GET /api/agents/status`). Di layar < 900 px sidebar menjadi laci yang dibuka lewat tombol menu.
+- **Log Audit** (khusus admin, izin `audit:view`) menampilkan setiap tindakan: siapa meminta, apa yang dilakukan (pengguna atau agent), dan siapa yang memutuskan. Bisa disaring per jenis aktor, kategori, kata kunci, dan rentang tanggal; detail JSON tiap baris bisa dibuka; data dimuat per 50 baris.
+- **Ekspor CSV** mengikuti filter yang aktif (maks. 10.000 baris), aman dibuka di Excel/Sheets (sel yang diawali `=`, `+`, `-`, `@` diberi tanda kutip).
+- Log audit hanya bisa dibaca; tidak ada API untuk mengubah atau menghapusnya.
 
 ## Menjalankan
 

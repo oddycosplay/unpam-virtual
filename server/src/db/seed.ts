@@ -24,7 +24,11 @@ export const SEED_DOCUMENTS = [
   { title: "SOP Proposal Kegiatan HIMA (CONTOH)", fileName: "sop-proposal-hima-contoh.md", agentScope: "hima" },
 ];
 
-export async function seed(db: Db, seedPassword: string): Promise<{ createdUsers: number; createdDocuments: number }> {
+export async function seed(
+  db: Db,
+  seedPassword: string,
+  bcryptRounds = 10,
+): Promise<{ createdUsers: number; createdDocuments: number }> {
   db.insert(roles)
     .values(ROLES.map((id) => ({ id, label: ROLE_INFO[id].label })))
     .onConflictDoNothing()
@@ -32,7 +36,7 @@ export async function seed(db: Db, seedPassword: string): Promise<{ createdUsers
 
   let createdUsers = 0;
   if (db.select({ id: users.id }).from(users).limit(1).all().length === 0) {
-    const passwordHash = bcrypt.hashSync(seedPassword, 10);
+    const passwordHash = bcrypt.hashSync(seedPassword, bcryptRounds);
     db.insert(users)
       .values(SEED_USERS.map((u) => ({ email: u.email, name: u.name, roleId: u.role, passwordHash })))
       .run();

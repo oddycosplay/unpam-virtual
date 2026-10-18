@@ -25,6 +25,7 @@ export const PERMISSIONS = [
   "admin:users",
   "admin:config",
   "admin:documents",
+  "audit:view",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 
@@ -33,7 +34,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   hima: ["agent:chat", "request:create", "proposal:create", "announcement:manage"],
   dosen: ["agent:chat", "submission:comment"],
   kaprodi: ["agent:chat", "submission:comment", "submission:decide"],
-  admin: ["admin:users", "admin:config", "admin:documents"],
+  admin: ["admin:users", "admin:config", "admin:documents", "audit:view"],
 };
 
 export function hasPermission(role: Role, permission: Permission): boolean {

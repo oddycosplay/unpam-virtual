@@ -36,7 +36,7 @@ let db: Db;
 
 beforeEach(async () => {
   db = createDb(":memory:");
-  await seed(db, config.SEED_PASSWORD);
+  await seed(db, config.SEED_PASSWORD, 4);
 });
 
 async function appWith(provider: FakeProvider) {
@@ -144,7 +144,7 @@ describe("Agent Akademik", () => {
   });
 
   it("berhasil pada percobaan kedua", async () => {
-    const provider = new FakeProvider([new LlmError("rate limit"), "UTS 9–20 November 2026 [1]."]);
+    const provider = new FakeProvider([new LlmError("rate limit"), "UTS 9â€“20 November 2026 [1]."]);
     const { app, cookie } = await appWith(provider);
     const res = await app.inject({
       method: "POST",

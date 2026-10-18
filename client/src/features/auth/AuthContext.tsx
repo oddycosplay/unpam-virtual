@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import type { PublicUser } from "@unpam/shared";
-import { api } from "../../api/http";
+import { HttpError, api } from "../../api/http";
 
 interface AuthState {
   user: PublicUser | null;
@@ -16,10 +16,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api<{ user: PublicUser }>("/api/auth/me")
-      .then((r) => setUser(r.user))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
+    let cancelled = false;
+    let timer: number | undefined;
+    // Hanya 401 berarti belum login. Error jaringan/5xx (mis. server sedang restart) dicoba ulang
+    // agar pengguna tidak terlempar ke halaman login.
+    const check = (attempt: number) =>
+      api<{ user: PublicUser }>("/api/auth/me")
+        .then((r) => {
+          if (cancelled) return;
+          setUser(r.user);
+          setLoading(false);
+        })
+        .catch((e) => {
+          if (cancelled) return;
+          if ((e instanceof HttpError && e.status === 401) || attempt >= 10) {
+            setUser(null);
+            setLoading(false);
+          } else {
+            timer = window.setTimeout(() => void check(attempt + 1), 1500);
+          }
+        });
+    void check(1);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {

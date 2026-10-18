@@ -230,6 +230,54 @@ export interface NotificationView {
   createdAt: string;
 }
 
+// ---------- Log audit (tahap 4) ----------
+
+export const AUDIT_CATEGORIES = ["auth", "agent", "task", "submission", "document", "config"] as const;
+export type AuditCategory = (typeof AUDIT_CATEGORIES)[number];
+
+export const AUDIT_CATEGORY_LABEL: Record<AuditCategory, string> = {
+  auth: "Login",
+  agent: "Agent",
+  task: "Papan tugas",
+  submission: "Pengajuan",
+  document: "Dokumen",
+  config: "Konfigurasi",
+};
+
+export interface AuditEntryView {
+  id: number;
+  at: string;
+  actorType: "user" | "agent" | "system";
+  /** Pengguna yang melakukan atau meminta tindakan. */
+  actorName: string | null;
+  actorAgent: string | null;
+  action: string;
+  category: AuditCategory | null;
+  summary: string;
+  kind: ActivityItem["kind"];
+  targetType: string | null;
+  targetId: string | null;
+  link: string | null;
+  approverName: string | null;
+  details: Record<string, unknown> | null;
+}
+
+export interface AuditFilters {
+  type?: "user" | "agent" | "system";
+  category?: AuditCategory;
+  q?: string;
+  /** Tanggal lokal YYYY-MM-DD, inklusif. */
+  from?: string;
+  to?: string;
+}
+
+export interface AuditPage {
+  entries: AuditEntryView[];
+  total: number;
+  /** Kirim sebagai `before` untuk halaman berikutnya; null bila sudah habis. */
+  nextBefore: number | null;
+}
+
 export interface ApiError {
   error: string;
 }

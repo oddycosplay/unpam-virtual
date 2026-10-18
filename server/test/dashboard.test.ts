@@ -28,7 +28,7 @@ class ScriptedProvider implements LlmProvider {
 let db: Db;
 beforeEach(async () => {
   db = createDb(":memory:");
-  await seed(db, config.SEED_PASSWORD);
+  await seed(db, config.SEED_PASSWORD, 4);
 });
 
 async function session(app: Awaited<ReturnType<typeof buildApp>>, email: string) {
@@ -44,7 +44,7 @@ describe("dashboard", () => {
   });
 
   it("menghitung statistik hari ini dan status agent", async () => {
-    const provider = new ScriptedProvider(["UTS 9–20 November [1].", new LlmError("x"), new LlmError("x")]);
+    const provider = new ScriptedProvider(["UTS 9â€“20 November [1].", new LlmError("x"), new LlmError("x")]);
     const app = await buildApp({ db, config, llm: () => provider });
     const mhs = await session(app, "mahasiswa@unpam.test");
     await app.inject({ method: "POST", url: "/api/agents/akademik/chat", headers: { cookie: mhs }, payload: { message: "Kapan UTS?" } });

@@ -48,7 +48,7 @@ class DraftingProvider implements LlmProvider {
 let db: Db;
 beforeEach(async () => {
   db = createDb(":memory:");
-  await seed(db, config.SEED_PASSWORD);
+  await seed(db, config.SEED_PASSWORD, 4);
 });
 
 async function setup(replies: (ProposalContent | Error | "no-tool")[] = [DRAFT]) {
@@ -98,11 +98,11 @@ describe("alur proposal HIMA", () => {
     // Draf masih privat: Kaprodi belum bisa melihat.
     expect((await req("GET", `/api/submissions/${id}`, t.kaprodi)).statusCode).toBe(404);
 
-    // 3. Pengurus menyunting → versi 2.
+    // 3. Pengurus menyunting â†’ versi 2.
     const edited = await req("PUT", `/api/submissions/${id}`, t.hima, { content: { ...DRAFT, tempat: "Gedung B lt. 3" } });
     expect(edited.json().submission).toMatchObject({ version: 2 });
 
-    // 4. Pengurus mengajukan → Kaprodi dapat notifikasi, tugas pindah kolom.
+    // 4. Pengurus mengajukan â†’ Kaprodi dapat notifikasi, tugas pindah kolom.
     const submitted = await req("POST", `/api/submissions/${id}/submit`, t.hima);
     expect(submitted.json().submission.status).toBe("menunggu_persetujuan");
     const kaprodiNotif = (await req("GET", "/api/notifications", t.kaprodi)).json();
@@ -119,10 +119,10 @@ describe("alur proposal HIMA", () => {
     // Tidak bisa diedit saat menunggu.
     expect((await req("PUT", `/api/submissions/${id}`, t.hima, { content: DRAFT })).statusCode).toBe(409);
 
-    // 5. Dosen memberi masukan → pemilik dapat notifikasi.
+    // 5. Dosen memberi masukan â†’ pemilik dapat notifikasi.
     expect((await req("POST", `/api/submissions/${id}/comments`, t.dosen, { body: "Tambahkan sesi tanya jawab." })).statusCode).toBe(200);
 
-    // 6. Kaprodi minta revisi tanpa catatan → ditolak validasi; dengan catatan → berhasil.
+    // 6. Kaprodi minta revisi tanpa catatan â†’ ditolak validasi; dengan catatan â†’ berhasil.
     expect((await req("POST", `/api/submissions/${id}/decision`, t.kaprodi, { decision: "revisi" })).statusCode).toBe(400);
     const revised = await req("POST", `/api/submissions/${id}/decision`, t.kaprodi, { decision: "revisi", note: "Rinci anggaran konsumsi." });
     expect(revised.json().submission.status).toBe("revisi");

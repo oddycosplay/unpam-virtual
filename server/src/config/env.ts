@@ -16,6 +16,8 @@ const EnvSchema = z.object({
   LLM_API_KEY: z.string().default(""),
   LLM_MODEL: z.string().default("claude-opus-5-5"),
   SEED_PASSWORD: z.string().default("unpam123"),
+  /** Putaran bcrypt untuk hash password. Tes memakai nilai kecil agar cepat. */
+  BCRYPT_ROUNDS: z.coerce.number().int().min(4).max(14).default(10),
 });
 
 export type AppConfig = z.infer<typeof EnvSchema>;
