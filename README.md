@@ -1,137 +1,129 @@
-[![CI](https://github.com/oddycosplay/unpam-virtual/actions/workflows/ci.yml/badge.svg)](https://github.com/oddycosplay/unpam-virtual/actions)
-[![Release](https://img.shields.io/badge/release-v0.1.0-blue.svg)](https://github.com/oddycosplay/unpam-virtual/releases)
-[![License](https://img.shields.io/badge/license-UNSPECIFIED-lightgrey.svg)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/oddycosplay/unpam-virtual?style=social)](https://github.com/oddycosplay/unpam-virtual/stargazers)
+[![CI](https://github.com/oddycosplay/unpam-virtual/actions/workflows/ci.yml/badge.svg)](https://github.com/oddycosplay/unpam-virtual/actions) [![Release](https://img.shields.io/badge/release-v0.1.0-blue.svg)](https://github.com/oddycosplay/unpam-virtual/releases) [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE) [![Stars](https://img.shields.io/github/stars/oddycosplay/unpam-virtual?style=social)](https://github.com/oddycosplay/unpam-virtual/stargazers)
 
-# Unpam Virtual
+# Unpam Virtual — Virtual 3D Campus for UNPAM
 
-Kampus virtual 3D untuk Program Studi Sistem Informasi Universitas Pamulang (UNPAM) dengan integrasi agent AI, workflow akademik, dan simulasi ruang kampus multi-user.
+Unpam Virtual is a web-based MVP that simulates a small 3D campus environment with AI agents, real-time multiplayer, and administrative workflows for academic use-cases.
 
 Versi saat ini: v0.1.0 — lihat juga CHANGELOG.md untuk catatan rilis.
 
-## Ringkasan singkat
+---
 
-Unpam Virtual adalah platform web yang menggabungkan kampus 3D interaktif, agen AI untuk layanan akademik, dan alat administrasi (proposal, persetujuan, log audit). Dirancang sebagai MVP untuk simulasikan lingkungan kampus modern berbasis web dan mudah dijalankan secara lokal untuk pengembangan.
+## TL;DR / Ringkasan singkat
+
+- What: 3D virtual campus (multiplayer) + AI agents for academic help and workflows.
+- Why: prototyping digital campus experiences, AI-assisted academic services, and lightweight real-time multi-user interactions.
+- Run: `npm install && npm run dev` → open `http://localhost:5173`.
 
 ---
 
-## Mengapa proyek ini penting
+## Highlights / Fitur utama
 
-- Memfasilitasi prototyping pengalaman kampus virtual (pengajaran, open day, simulasi proses administrasi).
-- Menyediakan integrasi AI berbasis dokumen untuk mendukung layanan akademik.
-- Menjadi basis untuk eksperimen real-time multiplayer yang ringan.
-
----
-
-## Fitur utama
-
-- Kampus 3D interaktif dan multi-user (Socket.IO)
-- Agent AI Akademik dengan RAG terhadap dokumen (SQLite FTS5)
-- Proximity chat dan avatar per peran
-- Workflow proposal HIMA → persetujuan Kaprodi
-- Log audit terperinci
-- Kelola akun dan peran, batas pemakaian AI harian per pengguna
-- Backup database otomatis dan manual
-- Pengamanan dasar: batas percobaan login, sesi yang batal saat password/peran berubah, cek Origin (CSRF), cookie Secure via HTTPS
+- Interactive 3D campus with avatar movement, proximity chat, and minimap.
+- Real-time synchronization over Socket.IO.
+- Agent AI (RAG) answering from indexed documents (SQLite FTS5) with source citations.
+- Administrative workflows: proposal drafting (HIMA), Kaprodi approval, task board and notifications.
+- Complete audit log for transparency and traceability.
 
 ---
 
-## Quick start (pengembang)
+## Demo / Screenshot
 
-Prasyarat:
+(Anda bisa menambahkan screenshot di `docs/screenshot.png` dan update URL di bawah ini.)
+
+![screenshot placeholder](docs/screenshot.png)
+
+---
+
+## Requirements / Persyaratan
+
 - Node.js 20+
 - npm
+- On Windows: Visual Studio Build Tools + Python for building `better-sqlite3`.
 
-Jalankan:
+---
+
+## Quick start (developer)
+
+1. Install dependencies
 
 ```bash
 npm install
+```
+
+2. Run development servers (monorepo)
+
+```bash
 npm run dev
 ```
 
-Buka http://localhost:5173
+3. Open in browser
 
-Catatan: Pada Windows, `better-sqlite3` perlu alat build (Visual Studio Build Tools + Python).
+```text
+http://localhost:5173
+```
+
+On first run `.env` is copied from `.env.example` and seeds the SQLite database with example accounts.
 
 ---
 
-## Struktur repository
+## Configuration / Konfigurasi
 
-```
-.
-├── client/              # aplikasi frontend (React + Vite)
-├── packages/
-│   └── shared/          # tipe & konstanta bersama
-├── server/              # backend Fastify + SQLite + AI layer
-├── scripts/
-├── .env.example
-├── README.md
-├── CHANGELOG.md
-└── tsconfig.base.json
-```
+- Environment variables: see `.env.example`.
+- LLM / AI Provider configuration: Admin panel or `LLM_*` variables in `.env`.
+  - Default: Anthropic (model `claude-opus-5-5` by default)
+  - OpenAI-compatible endpoints supported (OpenRouter, Ollama)
+- API keys are encrypted in DB (AES-256-GCM) and never returned to the browser.
 
 ---
 
-## Akun demo
+## Accounts / Akun demo
 
-Semua akun demo memakai password dari variabel `SEED_PASSWORD` (default: `unpam123`).
+All demo accounts use the password from `SEED_PASSWORD` in `.env` (default `unpam123`). Accounts are created only if users table is empty.
 
-| Email | Peran |
+| Email | Role / Peran |
 | --- | --- |
-| mahasiswa@unpam.test | Mahasiswa |
-| hima@unpam.test | Pengurus HIMA |
-| dosen@unpam.test | Dosen |
-| kaprodi@unpam.test | Kaprodi |
+| mahasiswa@unpam.test | Student |
+| hima@unpam.test | HIMA |
+| dosen@unpam.test | Lecturer |
+| kaprodi@unpam.test | Program Head |
 | admin@unpam.test | Admin |
 
 ---
 
-## Konfigurasi Provider AI
+## Development notes / Catatan pengembang
 
-Pengaturan melalui panel admin atau variabel `LLM_*` di `.env`. API key disimpan terenkripsi di database.
-
-- Default: Anthropic
-- Dukungan endpoint OpenAI-compatible (OpenRouter, Ollama)
-
----
-
-## Administrasi
-
-- **Kelola Akun** (menu Admin): buat akun dengan password sementara (tampil sekali), ubah peran, aktif/nonaktif, reset password, dan batas token AI khusus. Pengguna mengganti password di halaman **Akun**.
-- **Batas pemakaian AI**: token input + output per pengguna per hari. Urutan: batas khusus pengguna → pengaturan di panel → `DAILY_TOKEN_LIMIT` di `.env` (default 100.000).
-- **Backup** (menu Admin): SQLite online backup tiap `BACKUP_INTERVAL_HOURS` (default 24 jam), `BACKUP_KEEP` terakhir disimpan di `data/backups/`, bisa juga manual dan diunduh. Langkah pemulihan ada di halaman Backup.
-- **Log Audit** (menu Admin): siapa meminta, apa yang dilakukan, dan siapa yang menyetujui; bisa disaring dan diekspor ke CSV.
-
----
-
-## Pengujian
-
-```bash
-npm test                                   # tes server (vitest)
-npm run typecheck                          # cek tipe server + client
-npm run load-test -- --bots 30 --seconds 60   # uji beban kampus (server harus berjalan)
-```
-
-Hasil uji beban di laptop pengembangan: 31 pemain bersamaan (30 bot + 1 browser) dengan latensi gerak p95 120 ms, jeda snapshot p95 118 ms, tanpa error. FPS browser tampil di bilah status Kampus 3D.
+- Frontend: React + Vite + React Three Fiber
+- Backend: Fastify + Drizzle ORM + SQLite
+- Real-time: Socket.IO (position updates 10×/s, proximity chat radius 6m)
+- Tests: `npm test` (server)
+- Typecheck: `npm run typecheck`
+- To generate DB migrations: `npm run db:generate`
 
 ---
 
 ## Contributing
 
-1. Fork dan buat branch untuk fitur/bugfix: `git checkout -b feat/penjelasan-singkat`
-2. Tulis kode, tambahkan test jika perlu
-3. Buka pull request ke branch `main`
+1. Fork the repo and create a feature branch: `git checkout -b feat/your-feature`
+2. Make changes, add tests where applicable
+3. Open a Pull Request to `main` with a clear description and changelog entry
 
-Lihat juga `PRD Unpam Virtual (MVP).md` untuk spesifikasi fitur.
-
----
-
-## Rilis & Changelog
-
-Release notes utama tersedia di `CHANGELOG.md`. Untuk membuat release GitHub formal, lihat `.github/release-draft.md` (draft yang bisa dipakai untuk membuat release di web).
+Refer to `PRD Unpam Virtual (MVP).md` for full specs.
 
 ---
 
-## Lisensi
+## License / Lisensi
 
-Belum ditentukan. Jika Anda berencana membuka proyek ini ke publik, tambahkan file LICENSE.
+This project is licensed under the MIT License — see `LICENSE`.
+
+---
+
+## Release & changelog
+
+See `CHANGELOG.md` for the full list of changes. A draft release is available at `.github/release-draft.md` and can be published as `v0.1.0`.
+
+---
+
+## Contact
+
+Maintainer: oddycosplay — https://github.com/oddycosplay
+
