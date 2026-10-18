@@ -1,82 +1,80 @@
+[![CI](https://github.com/oddycosplay/unpam-virtual/actions/workflows/ci.yml/badge.svg)](https://github.com/oddycosplay/unpam-virtual/actions)
+[![Release](https://img.shields.io/badge/release-v0.1.0-blue.svg)](https://github.com/oddycosplay/unpam-virtual/releases)
+[![License](https://img.shields.io/badge/license-UNSPECIFIED-lightgrey.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/oddycosplay/unpam-virtual?style=social)](https://github.com/oddycosplay/unpam-virtual/stargazers)
+
 # Unpam Virtual
 
-Kampus virtual 3D Prodi Sistem Informasi Unpam dengan agent AI. Spesifikasi lengkap: [PRD Unpam Virtual (MVP).md](PRD%20Unpam%20Virtual%20(MVP).md).
+Kampus virtual 3D untuk Program Studi Sistem Informasi Universitas Pamulang (UNPAM) dengan integrasi agent AI, workflow akademik, dan simulasi ruang kampus multi-user.
 
-Status: **keenam tahap MVP selesai.**
+Versi saat ini: v0.1.0 — lihat juga CHANGELOG.md untuk catatan rilis.
 
-- Tahap 1: struktur proyek, SQLite, login, peran, dan LLM provider layer.
-- Tahap 2: chat Agent Akademik dengan RAG dokumen (SQLite FTS5) dan sumber ditampilkan.
-- Dashboard ruang kendali 3D (bagian dari tahap 4–5, dikerjakan lebih awal).
-- Tahap 3: papan tugas, Agent HIMA menyusun proposal, alur persetujuan Kaprodi, dan notifikasi.
-- Tahap 4: sidebar navigasi dengan status agent, dan halaman Log Audit.
-- Tahap 5: kampus 3D multiplayer dengan avatar, minimap, dan proximity chat.
-- Tahap 6: kelola akun, batas pemakaian AI per pengguna, backup, dan pengamanan dasar.
+## Ringkasan singkat
 
-## Pengerasan (tahap 6)
+Unpam Virtual adalah platform web yang menggabungkan kampus 3D interaktif, agen AI untuk layanan akademik, dan alat administrasi (proposal, persetujuan, log audit). Dirancang sebagai MVP untuk simulasikan lingkungan kampus modern berbasis web dan mudah dijalankan secara lokal untuk pengembangan.
 
-**Kelola akun** (menu Admin → Kelola Akun): buat akun, ubah peran, aktifkan/nonaktifkan, reset password, dan atur batas AI khusus per pengguna. Password sementara dibuat acak, hanya ditampilkan sekali, dan tidak dicatat di log audit. Pengguna yang memakai password sementara melihat pengingat untuk menggantinya di halaman **Akun** (klik nama di pojok kanan atas). Admin tidak bisa menonaktifkan atau menurunkan perannya sendiri, dan minimal satu admin aktif selalu tersisa.
+---
 
-**Batas pemakaian AI**: total token (input + output) per pengguna per hari, dihitung dari log audit. Urutan batas: khusus pengguna → pengaturan global di panel → `DAILY_TOKEN_LIMIT` di `.env` (default 100.000). Bila habis, agent tidak dipanggil, pengguna mendapat pesan, dan kejadian dicatat sebagai `agent.quota_exceeded`.
+## Mengapa proyek ini penting
 
-**Backup** (menu Admin → Backup): salinan database dengan SQLite online backup, aman saat aplikasi berjalan. Otomatis tiap `BACKUP_INTERVAL_HOURS` (default 24) dan disimpan `BACKUP_KEEP` terakhir (default 7) di `data/backups/`; bisa juga dibuat manual dan diunduh. Langkah pemulihan ada di halaman Backup.
+- Memfasilitasi prototyping pengalaman kampus virtual (pengajaran, open day, simulasi proses administrasi).
+- Menyediakan integrasi AI berbasis dokumen untuk mendukung layanan akademik.
+- Menjadi basis untuk eksperimen real-time multiplayer yang ringan.
 
-**Keamanan dasar**:
-- 5 kali login gagal dalam 15 menit (per IP + email) → dikunci 15 menit.
-- Cookie sesi `HttpOnly`, `SameSite=Lax`, dan `Secure` otomatis saat diakses lewat HTTPS (`COOKIE_SECURE=auto|true|false`).
-- Sesi lama batal saat password diganti/direset, peran diubah, atau akun dinonaktifkan.
-- Permintaan yang mengubah data dari origin lain ditolak (perlindungan CSRF). Proxy Vite meneruskan `X-Forwarded-Host` agar cek ini bekerja di dev dan LAN.
-- Header `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, dan `Cache-Control: no-store` untuk API.
-- Password baru minimal 8 karakter. Server memberi peringatan bila `SEED_PASSWORD` masih default.
+---
 
-## Uji beban kampus
+## Fitur utama
 
-```bash
-npm run load-test -- --bots 30 --seconds 60
-```
+- Kampus 3D interaktif dan multi-user (Socket.IO)
+- Agent AI Akademik dengan RAG terhadap dokumen (SQLite FTS5)
+- Proximity chat dan avatar per peran
+- Workflow proposal HIMA → persetujuan Kaprodi
+- Log audit terperinci
+- Kelola akun dan peran, batas pemakaian AI harian per pengguna
+- Backup database otomatis dan manual
+- Pengamanan dasar: batas percobaan login, sesi yang batal saat password/peran berubah, cek Origin (CSRF), cookie Secure via HTTPS
 
-Menjalankan N bot yang berjalan dan mengobrol bersamaan, lalu melaporkan jeda snapshot dan latensi gerak. Hasil di laptop pengembangan (server dev, satu proses):
+---
 
-| Pemain | Latensi gerak p50 / p95 | Jeda snapshot p95 | Error |
-| --- | --- | --- | --- |
-| 21 (20 bot + 1 browser) | 106 / 133 ms | 124 ms | 0 |
-| 31 (30 bot + 1 browser) | 106 / 120 ms | 118 ms | 0 |
+## Quick start (pengembang)
 
-FPS di browser tampil langsung di bilah status kampus (kuning bila di bawah 30).
+Prasyarat:
+- Node.js 20+
+- npm
 
-## Kampus 3D (multiplayer)
-
-Menu **Kampus 3D** (`/kampus`) membuka kampus yang bisa dijelajahi bersama:
-
-- Tujuh area PRD §7: Gerbang & Lobby (titik muncul), Ruang Akademik & Dosen, Sekretariat HIMA, Ruang Kaprodi, Perpustakaan, Kantin & Taman, dan hub Orkestrator. Avatar berwarna sesuai peran.
-- Berjalan dengan **WASD/panah** (relatif arah kamera), **klik lantai**, atau **klik minimap**. Ada tabrakan sederhana dengan dinding dan perabot. Kamera isometrik mengikuti avatar dan bisa diputar/di-zoom.
-- Multiplayer real-time lewat **Socket.IO** (`/socket.io`, memakai cookie sesi yang sama). Posisi disiarkan 10×/detik, status agent didorong saat berubah. Maksimal 60 koneksi.
-- **Proximity chat**: pesan hanya dikirim server ke pemain dalam radius 6 m (dihitung dari posisi di server), maks. 280 karakter, 1 pesan/detik. Pesan muncul sebagai gelembung di atas avatar dan **tidak disimpan** di database.
-- Robot agent bergerak sesuai status (Running ke meja, Waiting Approval ke gerbang Kaprodi, Idle ke kantin). Klik Agent Akademik untuk membuka panel chat tanpa meninggalkan kampus.
-- Dari perangkat lain di Wi-Fi yang sama, buka `http://<IP-laptop>:5173/kampus` (proxy Vite meneruskan WebSocket).
-
-## Navigasi dan log audit
-
-- Sidebar kiri menampilkan menu sesuai peran (Utama, Agent, Admin) dan status ketiga agent yang diperbarui tiap 10 detik (`GET /api/agents/status`). Di layar < 900 px sidebar menjadi laci yang dibuka lewat tombol menu.
-- **Log Audit** (khusus admin, izin `audit:view`) menampilkan setiap tindakan: siapa meminta, apa yang dilakukan (pengguna atau agent), dan siapa yang memutuskan. Bisa disaring per jenis aktor, kategori, kata kunci, dan rentang tanggal; detail JSON tiap baris bisa dibuka; data dimuat per 50 baris.
-- **Ekspor CSV** mengikuti filter yang aktif (maks. 10.000 baris), aman dibuka di Excel/Sheets (sel yang diawali `=`, `+`, `-`, `@` diberi tanda kutip).
-- Log audit hanya bisa dibaca; tidak ada API untuk mengubah atau menghapusnya.
-
-## Menjalankan
-
-Butuh Node.js 20+ (diuji dengan Node 24). Di Windows, `better-sqlite3` dikompilasi saat install, jadi Visual Studio Build Tools (C++) dan Python harus tersedia.
+Jalankan:
 
 ```bash
 npm install
 npm run dev
 ```
 
-- Saat pertama kali jalan, `.env` dibuat otomatis dari `.env.example` dengan `JWT_SECRET` dan `ENCRYPTION_KEY` acak.
-- Database SQLite ada di `data/unpam.db`, dimigrasi dan diisi akun contoh otomatis.
-- Buka http://localhost:5173. Dari perangkat lain di Wi-Fi yang sama, buka `http://<IP-laptop>:5173` (IP LAN tercetak di log server).
+Buka http://localhost:5173
 
-## Akun contoh
+Catatan: Pada Windows, `better-sqlite3` perlu alat build (Visual Studio Build Tools + Python).
 
-Semua akun memakai password dari `SEED_PASSWORD` di `.env` (default `unpam123`). Akun hanya dibuat bila tabel users masih kosong.
+---
+
+## Struktur repository
+
+```
+.
+├── client/              # aplikasi frontend (React + Vite)
+├── packages/
+│   └── shared/          # tipe & konstanta bersama
+├── server/              # backend Fastify + SQLite + AI layer
+├── scripts/
+├── .env.example
+├── README.md
+├── CHANGELOG.md
+└── tsconfig.base.json
+```
+
+---
+
+## Akun demo
+
+Semua akun demo memakai password dari variabel `SEED_PASSWORD` (default: `unpam123`).
 
 | Email | Peran |
 | --- | --- |
@@ -86,61 +84,54 @@ Semua akun memakai password dari `SEED_PASSWORD` di `.env` (default `unpam123`).
 | kaprodi@unpam.test | Kaprodi |
 | admin@unpam.test | Admin |
 
-## Provider AI
+---
 
-Atur lewat menu **Provider AI** (login sebagai admin) atau variabel `LLM_*` di `.env`. Konfigurasi panel admin diutamakan.
+## Konfigurasi Provider AI
 
-- **Anthropic (default):** kosongkan Base URL, model default `claude-opus-5-5`. Di endpoint resmi, request memakai fallback refusal sisi server (`fallbacks: "default"`).
-- **OpenAI-compatible:** isi Base URL, misalnya `https://openrouter.ai/api/v1` atau `http://localhost:11434/v1` (Ollama).
+Pengaturan melalui panel admin atau variabel `LLM_*` di `.env`. API key disimpan terenkripsi di database.
 
-API key disimpan terenkripsi AES-256-GCM di database dan tidak pernah dikirim balik ke browser. Tombol **Uji koneksi** mengirim satu prompt pendek dan hasilnya tercatat di log audit.
+- Default: Anthropic
+- Dukungan endpoint OpenAI-compatible (OpenRouter, Ollama)
 
-## Dashboard ruang kendali 3D
+---
 
-Halaman utama setelah login adalah ruang kendali isometrik 3D (React Three Fiber, semua objek dari bentuk primitif):
+## Administrasi
 
-- Hub Orkestrator di tengah dengan jalur bercahaya ke Ruang Akademik & Dosen, Sekretariat HIMA, Ruang Kaprodi, Perpustakaan, dan Kantin & Taman.
-- Robot agent bergerak di sepanjang jalur sesuai statusnya (PRD §7): Running ke meja kerja, Waiting Approval ke gerbang Kaprodi, Idle ke kantin. Label di atasnya menampilkan nama, status, dan aktivitas. Klik Agent Akademik untuk membuka chat.
-- Layar hologram dan panel samping menampilkan data nyata dari `GET /api/dashboard` (diperbarui tiap 5 detik): pertanyaan dan jawaban hari ini, rata-rata waktu jawab, error, jawaban per jam, basis pengetahuan, dan aktivitas terbaru dari log audit. Aktivitas akun dan konfigurasi hanya terlihat oleh admin.
-- Seret untuk memutar, scroll atau cubit untuk zoom. Gerakan dikurangi bila sistem meminta *reduced motion*. Bila WebGL tidak tersedia, data tetap tampil di panel.
+- **Kelola Akun** (menu Admin): buat akun dengan password sementara (tampil sekali), ubah peran, aktif/nonaktif, reset password, dan batas token AI khusus. Pengguna mengganti password di halaman **Akun**.
+- **Batas pemakaian AI**: token input + output per pengguna per hari. Urutan: batas khusus pengguna → pengaturan di panel → `DAILY_TOKEN_LIMIT` di `.env` (default 100.000).
+- **Backup** (menu Admin): SQLite online backup tiap `BACKUP_INTERVAL_HOURS` (default 24 jam), `BACKUP_KEEP` terakhir disimpan di `data/backups/`, bisa juga manual dan diunduh. Langkah pemulihan ada di halaman Backup.
+- **Log Audit** (menu Admin): siapa meminta, apa yang dilakukan, dan siapa yang menyetujui; bisa disaring dan diekspor ke CSV.
 
-## Proposal HIMA dan persetujuan Kaprodi
+---
 
-1. Pengurus HIMA mengisi **Minta proposal baru** (nama kegiatan, deskripsi, opsional tanggal/tempat/peserta/batas anggaran). Orkestrator mencatat tugas di papan (kolom *Diproses*).
-2. Agent HIMA menyusun draf di latar belakang mengikuti SOP HIMA, lewat tool call terstruktur (`simpan_draf_proposal`). Data yang tidak diketahui diberi penanda `[isi …]`. Gagal → coba ulang sekali → status *Gagal disusun* dan tombol **Coba lagi**.
-3. Draf muncul di **Hasil Kerja**. Pengurus menyuntingnya; setiap simpanan menjadi versi baru.
-4. Hanya pengurus (manusia) yang bisa **Ajukan ke Kaprodi**. Agent tidak punya jalur untuk mengajukan sendiri (PRD §6). Kaprodi mendapat notifikasi, dan robot Agent HIMA di dashboard berdiri di gerbang Ruang Kaprodi.
-5. Kaprodi **Setujui**, **Tolak**, atau **Minta revisi** (catatan wajib untuk tolak/revisi). Pemohon mendapat notifikasi. Dosen dan Kaprodi bisa memberi masukan.
-6. Kartu tugas berpindah otomatis: Diproses → Menunggu Persetujuan → Selesai (atau kembali ke Diproses saat revisi).
-
-Draf tetap privat milik pemohon sampai diajukan. Semua langkah tercatat di log audit, termasuk siapa yang menyetujui. Penyusunan yang terputus karena server restart ditandai gagal saat server dimulai lagi.
-
-## Agent Akademik
-
-Menu **Agent Akademik** tersedia untuk mahasiswa, pengurus HIMA, dosen, dan Kaprodi.
-
-- Pertanyaan dicari di potongan dokumen dengan BM25 (SQLite FTS5). Bila tidak ada potongan yang relevan, agent langsung menjawab "tidak tahu" tanpa memanggil LLM.
-- Agent hanya menjawab dari kutipan dokumen dan wajib memberi rujukan [n]. Sumber yang dirujuk tampil di bawah jawaban.
-- NIM, nomor telepon, dan email disamarkan sebelum teks dikirim ke provider AI.
-- Gagal → coba ulang sekali → pesan eskalasi ke pengguna dan `agent.error_escalated` di log audit.
-- Setiap jawaban tercatat di log audit (`agent.answered`) dengan latensi, jumlah token, dan dokumen sumber.
-
-## Dokumen
-
-Admin mengunggah dokumen lewat menu **Dokumen** (.pdf, .md, .txt, maks 10 MB) dan memilih agent yang boleh memakainya. Dua dokumen contoh fiktif di `server/seed-docs/` diindeks otomatis bila basis pengetahuan masih kosong. Hapus keduanya setelah dokumen resmi diunggah.
-
-## Perintah lain
+## Pengujian
 
 ```bash
-npm test            # tes server (vitest)
-npm run typecheck   # cek tipe server + client
-npm run db:generate # buat migrasi baru setelah mengubah server/src/db/schema.ts
+npm test                                   # tes server (vitest)
+npm run typecheck                          # cek tipe server + client
+npm run load-test -- --bots 30 --seconds 60   # uji beban kampus (server harus berjalan)
 ```
 
-## Struktur
+Hasil uji beban di laptop pengembangan: 31 pemain bersamaan (30 bot + 1 browser) dengan latensi gerak p95 120 ms, jeda snapshot p95 118 ms, tanpa error. FPS browser tampil di bilah status Kampus 3D.
 
-```
-packages/shared   tipe & konstanta bersama (peran, izin, status)
-server            Fastify + SQLite (Drizzle) + auth + LLM layer
-client            React + Vite
-```
+---
+
+## Contributing
+
+1. Fork dan buat branch untuk fitur/bugfix: `git checkout -b feat/penjelasan-singkat`
+2. Tulis kode, tambahkan test jika perlu
+3. Buka pull request ke branch `main`
+
+Lihat juga `PRD Unpam Virtual (MVP).md` untuk spesifikasi fitur.
+
+---
+
+## Rilis & Changelog
+
+Release notes utama tersedia di `CHANGELOG.md`. Untuk membuat release GitHub formal, lihat `.github/release-draft.md` (draft yang bisa dipakai untuk membuat release di web).
+
+---
+
+## Lisensi
+
+Belum ditentukan. Jika Anda berencana membuka proyek ini ke publik, tambahkan file LICENSE.
