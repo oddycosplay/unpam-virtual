@@ -13,6 +13,8 @@
 - area Pusat Kegiatan Mahasiswa di Kampus 3D; papan organisasi bisa diklik
 - dokumen pengetahuan organisasi untuk Agent Akademik
 - logo Universitas Pamulang di aplikasi, favicon, dan README
+- halaman Konsep Kampus: denah 3D multi-prodi (ruang prodi, ruang HIMA, orkestrator per prodi), Rektorat, LKA, LSP, dan Student Center 18 UKM
+- info lisensi di halaman login
 
 ### Security
 

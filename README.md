@@ -28,6 +28,7 @@ Versi saat ini: v0.1.0 — lihat juga CHANGELOG.md untuk catatan rilis.
 - Administrative workflows: proposal drafting (HIMA), Kaprodi approval, task board and notifications.
 - Complete audit log for transparency and traceability.
 - Student organization directory: 21 HIMA and 18 UKM of Universitas Pamulang, searchable, with a Student Activity Center (Pusat Kegiatan Mahasiswa) in the 3D campus; Agent Akademik can answer questions about them.
+- Multi-prodi campus concept (3D): faculty buildings with a prodi room, HIMA room, and orchestrator per study program, plus Rektorat, LKA, LSP, and a Student Center with 18 UKM rooms.
 
 ---
 
@@ -49,6 +50,11 @@ Versi saat ini: v0.1.0 — lihat juga CHANGELOG.md untuk catatan rilis.
 | --- | --- |
 | ![Direktori 21 HIMA dan 18 UKM dengan pencarian, HIMA Sistem Informasi disorot](docs/screenshots/organisasi.png) | ![Laci daftar HIMA dan UKM terbuka setelah papan di kampus 3D diklik](docs/screenshots/kampus-organisasi.png) |
 | Daftar HIMA dan UKM yang bisa dicari; tautan Instagram/kegiatan diisi admin. | Klik papan organisasi di sudut barat laut kampus untuk membuka daftarnya. |
+
+| Konsep Kampus Multi-Prodi | Alur orkestrator per prodi |
+| --- | --- |
+| ![Denah 3D konsep kampus: 8 gedung fakultas, Rektorat, LKA, LSP, dan Student Center 18 UKM](docs/screenshots/konsep.png) | ![Fakultas Ilmu Komputer dipilih: ruang prodi, ruang HIMA, dan alur orkestrator Sistem Informasi](docs/screenshots/konsep-prodi.png) |
+| Rancangan konsep (belum terhubung ke data): tiap prodi punya ruang prodi, ruang HIMA, dan orkestrator sendiri. | Klik gedung untuk fokus; pilih prodi untuk melihat alur Orkestrator → Agent Akademik / Agent HIMA → Kaprodi. |
 
 | Papan tugas | Log audit | Kelola akun |
 | --- | --- | --- |

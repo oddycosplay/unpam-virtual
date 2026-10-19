@@ -18,6 +18,7 @@ import { SubmissionPage } from "../features/submissions/SubmissionPage";
 import { Sidebar } from "./Sidebar";
 import { CampusPage } from "../features/campus/CampusPage";
 import { AccountPage } from "../features/account/AccountPage";
+import { ConceptPage } from "../features/concept/ConceptPage";
 import { OrganizationsPage } from "../features/organizations/OrganizationsPage";
 import { UsersPage } from "../features/admin/UsersPage";
 import { BackupPage } from "../features/admin/BackupPage";
@@ -36,7 +37,7 @@ function Layout() {
   const { user, loading, logout } = useAuth();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const fullBleed = location.pathname === "/" || location.pathname === "/kampus";
+  const fullBleed = location.pathname === "/" || location.pathname === "/kampus" || location.pathname === "/konsep";
 
   // Tutup laci menu (mobile) saat pindah halaman atau menekan Escape.
   useEffect(() => {
@@ -103,6 +104,7 @@ export function App() {
       <Route element={<Layout />}>
         <Route index element={<DashboardPage />} />
         <Route path="kampus" element={<CampusPage />} />
+        <Route path="konsep" element={<ConceptPage />} />
         <Route path="akun" element={<AccountPage />} />
         <Route path="organisasi" element={<OrganizationsPage />} />
         <Route

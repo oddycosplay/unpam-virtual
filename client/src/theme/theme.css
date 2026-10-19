@@ -73,6 +73,9 @@ button.ghost:hover:not(:disabled) { background: #eef2f7; }
 .login { min-height: 100vh; display: grid; place-items: center; padding: 1rem; }
 .login-card { width: 100%; max-width: 380px; border-top: 4px solid var(--si-blue); }
 .login-card button { width: 100%; margin-top: 0.4rem; }
+.login-license { margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border); text-align: center; font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+.login-license p { margin: 0; }
+.login-license a { font-weight: 600; }
 
 .brand { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; text-decoration: none; color: inherit; }
 .brand h1 { font-size: 1.35rem; margin: 0; }
@@ -655,3 +658,77 @@ th, td { text-align: left; padding: 0.55rem 0.5rem; border-bottom: 1px solid var
 th { color: var(--muted); font-weight: 600; font-size: 0.82rem; }
 button.ghost.danger { color: var(--danger); }
 .test-result { margin-top: 1rem; padding: 0.75rem; border-radius: 8px; background: #f8fafc; border: 1px solid var(--border); }
+
+/* ---------- Konsep kampus multi-prodi ---------- */
+.concept { position: relative; height: 100%; overflow: hidden; }
+.concept-scene { position: absolute; inset: 0; }
+.concept-scene canvas { touch-action: none; }
+.concept-head { top: 16px; left: 16px; width: 320px; max-height: calc(100% - 72px); overflow-y: auto; }
+.concept-head .eyebrow { margin: 0; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dk-accent); }
+.concept-head h1 { font-size: 1.3rem; margin: 0.1rem 0 0.4rem; }
+.concept-legend { list-style: none; margin: 0.7rem 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; font-size: 0.8rem; color: var(--dk-muted); }
+.concept-legend li, .concept-buildings button { display: inline-flex; align-items: center; gap: 0.4rem; }
+.concept-legend i, .concept-buildings i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; flex: none; }
+.concept-buildings { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.concept-buildings button {
+  padding: 0.3rem 0.6rem; font-size: 0.78rem; font-weight: 600; border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04); border: 1px solid var(--dk-border); color: inherit;
+}
+.concept-buildings button:hover:not(:disabled) { background: rgba(46, 230, 214, 0.1); }
+.concept-buildings button[aria-pressed="true"] { background: rgba(46, 230, 214, 0.14); }
+.concept-note { margin: 0.7rem 0 0; font-size: 0.74rem; color: var(--dk-muted); font-style: italic; }
+
+.concept-detail { top: 16px; right: 16px; width: 340px; max-height: calc(100% - 72px); overflow-y: auto; }
+.concept-detail h2 { padding-right: 1.5rem; }
+.concept-detail h3 { font-size: 0.8rem; margin: 0.9rem 0 0.4rem; color: #e4f2f5; }
+.concept-close {
+  position: absolute; top: 6px; right: 8px; padding: 0 0.4rem; font-size: 1.2rem; line-height: 1.4;
+  background: none; border: none; color: var(--dk-muted);
+}
+.concept-close:hover:not(:disabled) { background: none; color: #fff; }
+.concept-rooms { margin: 0.5rem 0 0; padding-left: 1.1rem; display: grid; gap: 0.2rem; font-size: 0.84rem; }
+.concept-rooms.columns { grid-template-columns: 1fr 1fr; column-gap: 1.4rem; }
+.concept-prodi { list-style: none; margin: 0.6rem 0 0; padding: 0; display: grid; gap: 0.3rem; }
+.concept-prodi button {
+  width: 100%; text-align: left; padding: 0.4rem 0.6rem; font-size: 0.84rem; border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04); border: 1px solid var(--dk-border); color: inherit;
+}
+.concept-prodi button:hover:not(:disabled) { background: rgba(46, 230, 214, 0.1); }
+.concept-prodi button[aria-pressed="true"] { border-color: var(--dk-accent); background: rgba(46, 230, 214, 0.14); }
+
+.concept-flow { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem; position: relative; }
+.concept-flow li { position: relative; }
+.concept-flow li:not(:last-child)::after {
+  content: "↓"; position: absolute; left: 50%; bottom: -1.05rem; transform: translateX(-50%);
+  color: var(--dk-accent); font-size: 0.8rem; line-height: 1;
+}
+.concept-flow li > div > div, .concept-flow li > div:not(.concept-flow-branch) {
+  display: grid; gap: 0.1rem; padding: 0.45rem 0.6rem; border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04); border: 1px solid var(--dk-border); font-size: 0.8rem;
+}
+.concept-flow strong { font-size: 0.82rem; }
+.concept-flow span { color: var(--dk-muted); font-size: 0.75rem; }
+.concept-flow li.hub > div { border-color: var(--dk-accent); background: rgba(46, 230, 214, 0.1); }
+.concept-flow-branch { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+.concept-flow-branch > div:last-child { border-color: rgba(200, 16, 46, 0.6); }
+
+.concept-label span {
+  display: inline-block; white-space: nowrap; pointer-events: none;
+  font-size: 11px; font-weight: 600; color: #cfe9ee;
+  padding: 2px 8px; border-radius: 4px;
+  background: rgba(10, 16, 22, 0.78); border: 1px solid rgba(46, 230, 214, 0.35);
+}
+.concept-label.unit span { font-size: 12px; color: #fff; border-color: rgba(245, 196, 0, 0.55); }
+.concept-label.room span { font-size: 10px; padding: 1px 6px; }
+.concept-label b { font-weight: 700; }
+.concept-label em { font-style: normal; font-weight: 500; }
+
+@media (max-width: 820px) {
+  .page-full:has(.concept) { height: auto; min-height: 0; }
+  .concept { height: auto; overflow: visible; display: flex; flex-direction: column; gap: 12px; padding-bottom: 16px; }
+  .concept-scene { position: relative; height: 58vh; min-height: 340px; }
+  .concept .hud { position: static; width: auto; margin: 0 16px; max-height: none; }
+  .concept .dash-hint { font-size: 0.7rem; bottom: 8px; white-space: normal; text-align: center; width: max-content; max-width: calc(100% - 32px); border-radius: 10px; }
+  .concept-label.unit span { font-size: 9px; padding: 1px 5px; }
+  .concept-label em { display: none; }
+}

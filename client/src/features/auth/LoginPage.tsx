@@ -52,6 +52,15 @@ export function LoginPage() {
         <button type="submit" disabled={busy}>
           {busy ? "Memeriksa…" : "Masuk"}
         </button>
+        <footer className="login-license">
+          <p>
+            © 2026 oddycosplay · Kode sumber berlisensi{" "}
+            <a href="https://github.com/oddycosplay/unpam-virtual/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">
+              MIT
+            </a>
+          </p>
+          <p>Logo Universitas Pamulang milik Universitas Pamulang, tidak termasuk lisensi MIT.</p>
+        </footer>
       </form>
     </main>
   );

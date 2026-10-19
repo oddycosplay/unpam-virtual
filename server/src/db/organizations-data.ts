@@ -1,4 +1,4 @@
-import type { OrganizationKind, OrganizationLinkType } from "@unpam/shared";
+import { PRODI_LIST, UKM_LIST, type OrganizationKind, type OrganizationLinkType } from "@unpam/shared";
 
 export interface OrganizationSeed {
   kind: OrganizationKind;
@@ -7,55 +7,11 @@ export interface OrganizationSeed {
   linkType: OrganizationLinkType;
 }
 
-// Daftar HIMA dan UKM Universitas Pamulang (urutan sesuai daftar resmi). URL diisi admin lewat aplikasi.
-const HIMA: [string, OrganizationLinkType][] = [
-  ["Administrasi Perkantoran D-3", "instagram"],
-  ["Akuntansi Perpajakan D-4", "instagram"],
-  ["Akuntansi S-1", "instagram"],
-  ["Manajemen S-1", "instagram"],
-  ["Ekonomi Syariah S-1", "instagram"],
-  ["Manajemen Pendidikan Islam S-1", "kegiatan"],
-  ["Ilmu Komunikasi S-1", "kegiatan"],
-  ["Matematika S-1", "kegiatan"],
-  ["Penjas S-1", "kegiatan"],
-  ["PGSD S-1", "kegiatan"],
-  ["PPKN S-1", "kegiatan"],
-  ["PEKO S-1", "kegiatan"],
-  ["Sastra Indonesia S-1", "kegiatan"],
-  ["Sastra Inggris S-1", "kegiatan"],
-  ["Sistem Informasi S-1", "kegiatan"],
-  ["Teknik Elektro S-1", "kegiatan"],
-  ["Teknik Industri S-1", "kegiatan"],
-  ["Teknik Informatika S-1", "kegiatan"],
-  ["Teknik Kimia S-1", "kegiatan"],
-  ["Teknik Mesin S-1", "kegiatan"],
-  ["Ilmu Hukum S-1", "kegiatan"],
-];
-
-const UKM = [
-  "UKM Archa Buana",
-  "UKM Disabilitas",
-  "UKM Galeri Investasi",
-  "UKM Menwa",
-  "UKM Nuanza Bicara",
-  "UKM Komunitas Peradilan Semu",
-  "UKM PSM Gita Sasmita",
-  "UKM Racana Putra",
-  "UKM Racana Putri",
-  "UKM Rumus",
-  "UKM Scooter",
-  "UKM Sepak Bola",
-  "UKM Tax Center",
-  "UKM Teater Patri",
-  "UKM UKO",
-  "UKM UPBC Basket",
-  "UKM ASY-SYIFA",
-  "UKM LINGKAR KREATIF",
-];
-
+// Daftar HIMA dan UKM Universitas Pamulang (urutan sesuai daftar resmi) dari data kampus bersama.
+// URL diisi admin lewat aplikasi.
 export const ORGANIZATION_SEED: OrganizationSeed[] = [
-  ...HIMA.map(([name, linkType], i) => ({ kind: "hima" as const, number: i + 1, name, linkType })),
-  ...UKM.map((name, i) => ({ kind: "ukm" as const, number: i + 1, name, linkType: "kegiatan" as const })),
+  ...PRODI_LIST.map((p) => ({ kind: "hima" as const, number: p.number, name: p.name, linkType: p.himaLink })),
+  ...UKM_LIST.map((name, i) => ({ kind: "ukm" as const, number: i + 1, name, linkType: "kegiatan" as const })),
 ];
 
 export const ORGANIZATION_DOC = {

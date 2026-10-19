@@ -8,7 +8,7 @@ import { useDashboard, useReducedMotion } from "./useDashboard";
 // Three.js cukup besar; dimuat terpisah agar halaman login tetap ringan.
 const ControlRoomScene = lazy(() => import("../../world/ControlRoomScene").then((m) => ({ default: m.ControlRoomScene })));
 
-class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean; attempt: number }> {
+export class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean; attempt: number }> {
   state = { failed: false, attempt: 0 };
   static getDerivedStateFromError() {
     return { failed: true };
