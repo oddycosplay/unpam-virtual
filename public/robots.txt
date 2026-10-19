@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Point search engines to sitemap
+Sitemap: https://unpam-virtual.example.com/sitemap.xml
