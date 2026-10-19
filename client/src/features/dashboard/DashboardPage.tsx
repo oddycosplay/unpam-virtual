@@ -53,6 +53,7 @@ export function DashboardPage() {
               viewerRole={user.role}
               reducedMotion={reducedMotion}
               onSelectAgent={() => canChat && navigate("/chat")}
+              onOpenOrganizations={() => navigate("/organisasi")}
             />
           </Suspense>
         </SceneBoundary>

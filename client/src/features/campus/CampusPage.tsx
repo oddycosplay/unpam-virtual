@@ -4,6 +4,7 @@ import { CHAT_MAX_LENGTH, CHAT_RADIUS, ROLE_INFO, SPAWN, hasPermission } from "@
 import { useAuth } from "../auth/AuthContext";
 import { useDashboard, useReducedMotion } from "../dashboard/useDashboard";
 import { ChatPage } from "../chat/ChatPage";
+import { OrganizationDirectory } from "../organizations/OrganizationDirectory";
 import { Icon } from "../../components/ui/Icon";
 import type { FloorTarget, SelfState } from "../../world/CampusScene";
 import { Minimap } from "./Minimap";
@@ -48,6 +49,7 @@ export function CampusPage() {
   const [now, setNow] = useState(Date.now());
   const [nearby, setNearby] = useState(0);
   const [agentPanel, setAgentPanel] = useState(false);
+  const [orgPanel, setOrgPanel] = useState(false);
   const chatInput = useRef<HTMLInputElement>(null);
   const logEnd = useRef<HTMLLIElement>(null);
   const fpsEl = useRef<HTMLSpanElement>(null);
@@ -95,12 +97,13 @@ export function CampusPage() {
       }
       if (e.key === "Escape") {
         if (agentPanel) setAgentPanel(false);
+        else if (orgPanel) setOrgPanel(false);
         else if (typing) (e.target as HTMLElement).blur();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [agentPanel]);
+  }, [agentPanel, orgPanel]);
 
   const bubbles = useMemo(() => {
     const out: Record<string, string> = {};
@@ -148,6 +151,7 @@ export function CampusPage() {
                 reducedMotion={reducedMotion}
                 onMove={campus.sendMove}
                 onSelectAgent={onSelectAgent}
+                onOpenOrganizations={() => setOrgPanel(true)}
                 onFps={showFps}
               />
             </Suspense>
@@ -217,6 +221,19 @@ export function CampusPage() {
         </form>
         <p className="hud-muted small campus-privacy">Pesan tidak disimpan dan hanya terdengar oleh pemain di dekat Anda.</p>
       </section>
+
+      {orgPanel && (
+        <>
+          <div className="drawer-backdrop" onClick={() => setOrgPanel(false)} aria-hidden />
+          <aside className="agent-drawer" aria-label="Daftar organisasi mahasiswa">
+            <button type="button" className="icon-button drawer-close" aria-label="Tutup daftar organisasi" onClick={() => setOrgPanel(false)}>
+              <Icon name="close" />
+            </button>
+            <h2 className="drawer-title">Pusat Kegiatan Mahasiswa</h2>
+            <OrganizationDirectory compact />
+          </aside>
+        </>
+      )}
 
       {agentPanel && (
         <>

@@ -68,6 +68,11 @@ export function dashboardRoutes(app: FastifyInstance, { db, agents }: AppContext
       .limit(10)
       .all();
 
+    const orgs = db.get<{ hima: number; ukm: number }>(sql`
+      SELECT (SELECT count(*) FROM organizations WHERE kind = 'hima') AS hima,
+             (SELECT count(*) FROM organizations WHERE kind = 'ukm') AS ukm
+    `)!;
+
     const work = db.get<{ pending: number; decided: number }>(sql`
       SELECT (SELECT count(*) FROM submissions WHERE status = 'menunggu_persetujuan') AS pending,
              (SELECT count(*) FROM approvals
@@ -84,6 +89,7 @@ export function dashboardRoutes(app: FastifyInstance, { db, agents }: AppContext
         pendingApprovals: work.pending,
         decidedToday: work.decided,
         tasks: taskCounts,
+        organizations: orgs,
         questionsToday: today.questions,
         answersToday: today.answers,
         errorsToday: today.errors,

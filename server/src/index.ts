@@ -8,7 +8,8 @@ import { scheduleBackups } from "./backup/backup";
 
 const config = loadConfig();
 const db = createDb(config.DB_PATH);
-const { createdUsers, createdDocuments } = await seed(db, config.SEED_PASSWORD, config.BCRYPT_ROUNDS);
+const { createdUsers, createdDocuments, createdOrganizations } = await seed(db, config.SEED_PASSWORD, config.BCRYPT_ROUNDS);
+if (createdOrganizations > 0) console.log(`[seed] ${createdOrganizations} organisasi mahasiswa (HIMA/UKM) ditambahkan.`);
 if (createdUsers > 0) console.log(`[seed] ${createdUsers} akun contoh dibuat (lihat README).`);
 if (createdDocuments > 0) console.log(`[seed] ${createdDocuments} dokumen contoh diindeks.`);
 const interrupted = failInterruptedDrafts(db);

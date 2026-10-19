@@ -53,7 +53,7 @@ describe("dashboard", () => {
 
     const res = await app.inject({ method: "GET", url: "/api/dashboard", headers: { cookie: mhs } });
     const body = res.json();
-    expect(body.stats).toMatchObject({ questionsToday: 3, answersToday: 2, errorsToday: 1, documents: 2, users: 5 });
+    expect(body.stats).toMatchObject({ questionsToday: 3, answersToday: 2, errorsToday: 1, documents: 3, users: 5, organizations: { hima: 21, ukm: 18 } });
     expect(body.answersPerHour).toHaveLength(12);
     expect(body.answersPerHour.at(-1)).toBe(2);
     expect(body.agents.find((a: { id: string }) => a.id === "akademik")).toMatchObject({ status: "error" });

@@ -5,7 +5,8 @@ import bcrypt from "bcryptjs";
 import { ROLE_INFO, ROLES, type Role } from "@unpam/shared";
 import { ingestDocument } from "../rag/ingest";
 import type { Db } from "./client";
-import { knowledgeDocuments, roles, users } from "./schema";
+import { knowledgeDocuments, organizations, roles, users } from "./schema";
+import { ORGANIZATION_DOC, ORGANIZATION_SEED, organizationMarkdown } from "./organizations-data";
 
 /** Akun contoh, satu per peran. Data fiktif, bukan data mahasiswa asli. */
 export const SEED_USERS: { email: string; name: string; role: Role }[] = [
@@ -28,7 +29,7 @@ export async function seed(
   db: Db,
   seedPassword: string,
   bcryptRounds = 10,
-): Promise<{ createdUsers: number; createdDocuments: number }> {
+): Promise<{ createdUsers: number; createdDocuments: number; createdOrganizations: number }> {
   db.insert(roles)
     .values(ROLES.map((id) => ({ id, label: ROLE_INFO[id].label })))
     .onConflictDoNothing()
@@ -55,5 +56,20 @@ export async function seed(
       createdDocuments++;
     }
   }
-  return { createdUsers, createdDocuments };
+
+  // Direktori HIMA/UKM dan dokumen pengetahuannya dibuat sekali. Bila admin menghapus dokumennya, tidak dibuat ulang.
+  let createdOrganizations = 0;
+  if (db.select({ id: organizations.id }).from(organizations).limit(1).all().length === 0) {
+    db.insert(organizations).values(ORGANIZATION_SEED).run();
+    createdOrganizations = ORGANIZATION_SEED.length;
+    await ingestDocument(db, {
+      ...ORGANIZATION_DOC,
+      mimeType: "text/markdown",
+      agentScope: "akademik",
+      buffer: Buffer.from(organizationMarkdown(), "utf8"),
+      uploadedByUserId: null,
+    });
+    createdDocuments++;
+  }
+  return { createdUsers, createdDocuments, createdOrganizations };
 }

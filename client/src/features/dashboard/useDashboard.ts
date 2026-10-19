@@ -21,6 +21,7 @@ export const EMPTY_SUMMARY: DashboardSummary = {
     pendingApprovals: 0,
     decidedToday: 0,
     tasks: { baru: 0, diproses: 0, menunggu_persetujuan: 0, selesai: 0 },
+    organizations: { hima: 0, ukm: 0 },
   },
   answersPerHour: new Array(12).fill(0),
   recentActivity: [],

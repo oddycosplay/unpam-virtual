@@ -75,7 +75,7 @@ describe("pencarian", () => {
     expect(hits[0]?.section).toBe("Kehadiran dan Syarat Ujian");
     // SOP proposal milik agent HIMA, tidak boleh muncul untuk agent akademik.
     const hima = searchChunks(db, "proposal anggaran kegiatan", { agentScope: "akademik" });
-    expect(hima.every((h) => !h.documentTitle.includes("HIMA"))).toBe(true);
+    expect(hima.every((h) => !h.documentTitle.includes("SOP"))).toBe(true);
   });
 
   it("indeks FTS ikut terhapus saat dokumen dihapus", () => {

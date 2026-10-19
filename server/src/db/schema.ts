@@ -4,6 +4,8 @@ import type {
   ChatSource,
   Decision,
   LlmProviderKind,
+  OrganizationKind,
+  OrganizationLinkType,
   ProposalBrief,
   ProposalContent,
   Role,
@@ -189,6 +191,20 @@ export const notifications = sqliteTable("notifications", {
   link: text("link"),
   readAt: text("read_at"),
   createdAt: createdAt(),
+});
+
+/** Direktori organisasi mahasiswa (HIMA dan UKM) se-Universitas Pamulang. */
+export const organizations = sqliteTable("organizations", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  kind: text("kind").$type<OrganizationKind>().notNull(),
+  number: integer("number").notNull(),
+  name: text("name").notNull(),
+  linkType: text("link_type").$type<OrganizationLinkType>().notNull(),
+  url: text("url"),
+  updatedByUserId: integer("updated_by_user_id").references(() => users.id),
+  updatedAt: text("updated_at")
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
 });
 
 /** Satu baris (id = 1). Bila kosong, server memakai nilai LLM_* dari .env. */

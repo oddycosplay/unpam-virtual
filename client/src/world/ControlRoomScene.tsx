@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls, OrthographicCamera } from "@react-three/drei";
+import { Html, OrbitControls, OrthographicCamera } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
+import * as THREE from "three";
 import { ROLE_INFO, type DashboardSummary, type Role } from "@unpam/shared";
 import { AgentBot, DataPulses } from "./agents";
 import { HoloScreen } from "./HoloScreen";
@@ -36,8 +37,84 @@ function AutoZoom() {
   return null;
 }
 
+const FLAG_COLORS = ["#c8102e", "#1e5bb8", "#f5c400", "#2ee6d6", "#5ee08a", "#ff8c42"];
+
+/** Papan direktori organisasi di Pusat Kegiatan Mahasiswa, dengan deretan bendera. */
+function OrganizationBoard({ hima, ukm, onOpen }: { hima: number; ukm: number; onOpen?: () => void }) {
+  return (
+    <group>
+      {[-8.75, -5.65].map((x) => (
+        <mesh key={x} position={[x, 1.0, -8.75]} castShadow>
+          <boxGeometry args={[0.14, 2.0, 0.14]} />
+          <meshStandardMaterial color="#26343f" metalness={0.5} roughness={0.4} />
+        </mesh>
+      ))}
+      <HoloScreen
+        position={[-7.2, 1.45, -8.7]}
+        size={[3.0, 1.15]}
+        content={{
+          kind: "stats",
+          title: "Organisasi Mahasiswa",
+          items: [
+            { label: "HIMA", value: String(hima) },
+            { label: "UKM", value: String(ukm) },
+          ],
+        }}
+      />
+      {FLAG_COLORS.map((color, i) => {
+        const x = -9.1 + i * 0.75;
+        return (
+          <group key={color} position={[x, 0.16, -6.0]}>
+            <mesh position={[0, 0.8, 0]} castShadow>
+              <cylinderGeometry args={[0.03, 0.03, 1.6, 8]} />
+              <meshStandardMaterial color="#c9d3dc" metalness={0.6} />
+            </mesh>
+            <mesh position={[0.22, 1.42, 0]}>
+              <planeGeometry args={[0.42, 0.28]} />
+              <meshStandardMaterial color={color} side={THREE.DoubleSide} emissive={color} emissiveIntensity={0.25} />
+            </mesh>
+          </group>
+        );
+      })}
+      {/* Area klik tak terlihat yang menutupi papan */}
+      {onOpen && (
+        <mesh
+          position={[-7.2, 1.2, -8.6]}
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpen();
+          }}
+          onPointerOver={(e) => {
+            e.stopPropagation();
+            document.body.style.cursor = "pointer";
+          }}
+          onPointerOut={() => {
+            document.body.style.cursor = "";
+          }}
+        >
+          <boxGeometry args={[3.3, 2.0, 0.5]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
+      )}
+      {onOpen && (
+        <Html position={[-7.2, 0.45, -8.2]} center className="zone-label" zIndexRange={[10, 0]}>
+          <span>Klik papan untuk daftar HIMA & UKM</span>
+        </Html>
+      )}
+    </group>
+  );
+}
+
 /** Seluruh ruangan dan perabot. viewerRole diisi untuk menampilkan avatar statis "Anda" (dashboard). */
-export function Rooms({ summary, viewerRole }: { summary: DashboardSummary; viewerRole?: Role }) {
+export function Rooms({
+  summary,
+  viewerRole,
+  onOpenOrganizations,
+}: {
+  summary: DashboardSummary;
+  viewerRole?: Role;
+  onOpenOrganizations?: () => void;
+}) {
   const { stats } = summary;
   const akademik = summary.agents.find((a) => a.id === "akademik");
   const latencySec = stats.avgLatencyMs === null ? null : stats.avgLatencyMs / 1000;
@@ -135,6 +212,9 @@ export function Rooms({ summary, viewerRole }: { summary: DashboardSummary; view
       <Plant position={[-3.6, 0.16, 8.1]} />
       <Plant position={[0.6, 0.16, 8.1]} />
 
+      {/* Pusat Kegiatan Mahasiswa (barat laut): papan HIMA & UKM, klik untuk melihat daftar */}
+      <OrganizationBoard hima={stats.organizations.hima} ukm={stats.organizations.ukm} onOpen={onOpenOrganizations} />
+
       {/* Kantin & Taman (barat daya) */}
       <Tree position={[-8.8, 0.16, 8.3]} />
       <Tree position={[-6.2, 0.16, 8.5]} />
@@ -184,11 +264,13 @@ export function ControlRoomScene({
   viewerRole,
   reducedMotion,
   onSelectAgent,
+  onOpenOrganizations,
 }: {
   summary: DashboardSummary;
   viewerRole: Role;
   reducedMotion: boolean;
   onSelectAgent: (id: string) => void;
+  onOpenOrganizations?: () => void;
 }) {
   const busy = summary.agents.some((a) => a.status === "running" || a.status === "planning");
   const recent = summary.answersPerHour.slice(-2).reduce((a, b) => a + b, 0);
@@ -227,7 +309,7 @@ export function ControlRoomScene({
       <Floor />
       <Roads />
       <Hub busy={busy} reducedMotion={reducedMotion} />
-      <Rooms summary={summary} viewerRole={viewerRole} />
+      <Rooms summary={summary} viewerRole={viewerRole} onOpenOrganizations={onOpenOrganizations} />
       <DataPulses count={pulses} reducedMotion={reducedMotion} />
       {summary.agents.map((agent, i) => (
         <AgentBot

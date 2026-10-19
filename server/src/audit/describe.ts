@@ -70,6 +70,8 @@ export function describe(row: AuditRow): Pick<ActivityItem, "text" | "kind"> {
       return { kind: "system", text: `Dokumen "${d.title}" diindeks (${d.chunkCount} potongan)` };
     case "document.deleted":
       return { kind: "system", text: `Dokumen "${d.title}" dihapus` };
+    case "document.organization_link_updated":
+      return { kind: "system", text: `${who} ${d.after ? "memperbarui" : "menghapus"} tautan ${d.kind === "ukm" ? "" : "HIMA "}${d.title}` };
     case "auth.login":
       return { kind: "user", text: `${who} masuk` };
     case "auth.logout":

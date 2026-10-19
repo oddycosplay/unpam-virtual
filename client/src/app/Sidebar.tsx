@@ -21,6 +21,7 @@ const GROUPS: { title: string; items: Item[] }[] = [
       { to: "/", label: "Dashboard", icon: "dashboard", end: true },
       { to: "/kampus", label: "Kampus 3D", icon: "campus" },
       { to: "/tugas", label: "Papan Tugas", icon: "board" },
+      { to: "/organisasi", label: "Organisasi", icon: "flag" },
       { to: "/hasil-kerja", label: "Hasil Kerja", icon: "work", any: ["proposal:create", "submission:comment", "submission:decide"] },
     ],
   },

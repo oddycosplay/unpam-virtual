@@ -20,6 +20,7 @@ import { AgentRuntime } from "./agents/runtime";
 import { JobTracker } from "./agents/jobs";
 import { LoginLimiter, registerSecurity } from "./auth/security";
 import { backupRoutes } from "./modules/backup/routes";
+import { organizationRoutes } from "./modules/organizations/routes";
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
@@ -62,6 +63,7 @@ export async function buildApp(
   taskRoutes(app, ctx);
   auditRoutes(app, ctx);
   backupRoutes(app, ctx);
+  organizationRoutes(app, ctx);
   attachCampus(app, ctx);
 
   app.addHook("onClose", async () => ctx.jobs.idle());

@@ -125,7 +125,9 @@ function SelfPlayer({
   }, [targetRef]);
 
   useFrame((_, rawDt) => {
-    const dt = Math.min(rawDt, 0.05);
+    // Batasi dt agar tidak "teleport" setelah tab tertahan, tapi cukup longgar supaya perangkat
+    // 10 FPS tetap berjalan normal. Langkah maks 0,32 m < tebal dinding tersempit + radius (0,8 m).
+    const dt = Math.min(rawDt, 0.1);
     const s = selfRef.current;
     let dx = 0;
     let dz = 0;
@@ -299,6 +301,7 @@ export function CampusScene({
   reducedMotion,
   onMove,
   onSelectAgent,
+  onOpenOrganizations,
   onFps,
 }: {
   summary: DashboardSummary;
@@ -313,6 +316,7 @@ export function CampusScene({
   reducedMotion: boolean;
   onMove: (s: SelfState) => void;
   onSelectAgent: (id: string) => void;
+  onOpenOrganizations?: () => void;
   onFps?: (fps: number) => void;
 }) {
   const start = selfRef.current;
@@ -353,7 +357,7 @@ export function CampusScene({
       <Floor />
       <Roads />
       <Hub busy={busy} reducedMotion={reducedMotion} />
-      <Rooms summary={summary} />
+      <Rooms summary={summary} onOpenOrganizations={onOpenOrganizations} />
       <DataPulses count={4} reducedMotion={reducedMotion} />
       <ClickFloor targetRef={targetRef} />
       <TargetMarker targetRef={targetRef} />

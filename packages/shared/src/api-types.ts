@@ -109,6 +109,7 @@ export interface DashboardSummary {
     pendingApprovals: number;
     decidedToday: number;
     tasks: Record<TaskStatus, number>;
+    organizations: { hima: number; ukm: number };
   };
   /** Jumlah jawaban agent per jam, 12 jam terakhir (index terakhir = jam ini). */
   answersPerHour: number[];
@@ -310,6 +311,22 @@ export interface BackupView {
   sizeBytes: number;
   createdAt: string;
   kind: "otomatis" | "manual";
+}
+
+// ---------- Organisasi mahasiswa ----------
+
+export type OrganizationKind = "hima" | "ukm";
+/** Jenis tautan sesuai daftar resmi: akun Instagram atau bukti/foto kegiatan. */
+export type OrganizationLinkType = "instagram" | "kegiatan";
+
+export interface OrganizationView {
+  id: number;
+  kind: OrganizationKind;
+  /** Nomor urut sesuai daftar resmi. */
+  number: number;
+  name: string;
+  linkType: OrganizationLinkType;
+  url: string | null;
 }
 
 export interface ApiError {

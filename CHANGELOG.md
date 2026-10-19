@@ -9,6 +9,10 @@
 - batas token AI harian per pengguna (khusus, global di panel, atau `DAILY_TOKEN_LIMIT`)
 - backup SQLite otomatis (tiap 24 jam, 7 terakhir) dan manual, bisa diunduh admin
 - skrip uji beban kampus `npm run load-test` dan penghitung FPS di Kampus 3D
+- direktori Organisasi Mahasiswa: 21 HIMA dan 18 UKM UNPAM, bisa dicari, tautan diisi admin
+- area Pusat Kegiatan Mahasiswa di Kampus 3D; papan organisasi bisa diklik
+- dokumen pengetahuan organisasi untuk Agent Akademik
+- logo Universitas Pamulang di aplikasi, favicon, dan README
 
 ### Security
 

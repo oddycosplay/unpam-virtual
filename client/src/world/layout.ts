@@ -57,6 +57,7 @@ export const ZONES: Zone[] = [
   { id: "perpustakaan", name: "Perpustakaan", center: [7.2, -7.2], size: [4.6, 4], accent: "#58a6ff" },
   { id: "kantin", name: "Kantin & Taman", center: [-7.2, 7], size: [4.6, 4], accent: "#5ee08a" },
   { id: "lobby", name: "Gerbang & Lobby", center: [-1.5, 9.1], size: [5, 2.8], accent: COLORS.siBlue },
+  { id: "pkm", name: "Pusat Kegiatan Mahasiswa", center: [-7.2, -7.2], size: [4.6, 4], accent: "#ff8c42" },
 ];
 
 // Graf jalan: agent hanya bergerak di sepanjang jalur bercahaya.
@@ -74,6 +75,7 @@ export const NODES = {
   kantin: [-5.2, 5.2],
   komando: [3.7, 3.7],
   lobby: [-1.5, 7.4],
+  pkm: [-4.9, -4.6],
 } satisfies Record<string, Vec2>;
 
 export type NodeId = keyof typeof NODES;
@@ -91,6 +93,7 @@ export const EDGES: [NodeId, NodeId][] = [
   ["south", "kantin"],
   ["hub", "komando"],
   ["south", "lobby"],
+  ["north", "pkm"],
 ];
 
 /** Penghalang untuk tabrakan pemain: persegi panjang [cx, cz, lebarX, lebarZ]. */
@@ -115,6 +118,8 @@ export const OBSTACLES: Rect[] = [
   [-8.1, 0, 0.7, 1.5],
   [-7.6, 6.4, 1, 1],
   [-5.9, 7.2, 1, 1],
+  // Papan organisasi di Pusat Kegiatan Mahasiswa
+  [-7.2, -8.7, 3.4, 0.5],
   // Hub Orkestrator dan meja komando
   [0, 0, 3, 3],
   [5.7, 5.7, 2.8, 2.8],

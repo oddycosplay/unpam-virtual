@@ -18,6 +18,7 @@ import { SubmissionPage } from "../features/submissions/SubmissionPage";
 import { Sidebar } from "./Sidebar";
 import { CampusPage } from "../features/campus/CampusPage";
 import { AccountPage } from "../features/account/AccountPage";
+import { OrganizationsPage } from "../features/organizations/OrganizationsPage";
 import { UsersPage } from "../features/admin/UsersPage";
 import { BackupPage } from "../features/admin/BackupPage";
 
@@ -103,6 +104,7 @@ export function App() {
         <Route index element={<DashboardPage />} />
         <Route path="kampus" element={<CampusPage />} />
         <Route path="akun" element={<AccountPage />} />
+        <Route path="organisasi" element={<OrganizationsPage />} />
         <Route
           path="admin/users"
           element={

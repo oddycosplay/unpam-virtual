@@ -27,6 +27,7 @@ Versi saat ini: v0.1.0 — lihat juga CHANGELOG.md untuk catatan rilis.
 - Agent AI (RAG) answering from indexed documents (SQLite FTS5) with source citations.
 - Administrative workflows: proposal drafting (HIMA), Kaprodi approval, task board and notifications.
 - Complete audit log for transparency and traceability.
+- Student organization directory: 21 HIMA and 18 UKM of Universitas Pamulang, searchable, with a Student Activity Center (Pusat Kegiatan Mahasiswa) in the 3D campus; Agent Akademik can answer questions about them.
 
 ---
 
@@ -44,11 +45,16 @@ Versi saat ini: v0.1.0 — lihat juga CHANGELOG.md untuk catatan rilis.
 | ![Chat Agent Akademik dengan rujukan dan kutipan dokumen sumber](docs/screenshots/agent-akademik.png) | ![Detail proposal dengan riwayat versi dan keputusan Kaprodi](docs/screenshots/proposal.png) |
 | Jawaban hanya dari dokumen resmi, setiap fakta diberi rujukan [n]. | Draf disusun Agent HIMA, disunting pengurus, lalu diputuskan Kaprodi. |
 
+| Organisasi Mahasiswa | Pusat Kegiatan Mahasiswa di Kampus 3D |
+| --- | --- |
+| ![Direktori 21 HIMA dan 18 UKM dengan pencarian, HIMA Sistem Informasi disorot](docs/screenshots/organisasi.png) | ![Laci daftar HIMA dan UKM terbuka setelah papan di kampus 3D diklik](docs/screenshots/kampus-organisasi.png) |
+| Daftar HIMA dan UKM yang bisa dicari; tautan Instagram/kegiatan diisi admin. | Klik papan organisasi di sudut barat laut kampus untuk membuka daftarnya. |
+
 | Papan tugas | Log audit | Kelola akun |
 | --- | --- | --- |
 | ![Papan tugas empat kolom](docs/screenshots/papan-tugas.png) | ![Log audit dengan filter dan detail](docs/screenshots/log-audit.png) | ![Kelola akun dengan peran dan kuota AI](docs/screenshots/kelola-akun.png) |
 
-<sub>Semua data pada gambar adalah data contoh fiktif dari seed pengembangan. Mockup dibuat dari screenshot aplikasi yang berjalan.</sub>
+<sub>Akun, chat, dan proposal pada gambar adalah data contoh fiktif dari seed pengembangan. Daftar HIMA dan UKM adalah daftar organisasi Universitas Pamulang. Mockup dibuat dari screenshot aplikasi yang berjalan.</sub>
 
 ---
 
