@@ -1,0 +1,42 @@
+# Terbitkan GitHub Release saat tag vX.Y.Z di-push. Catatan rilis diambil dari bagian
+# "## vX.Y.Z - ..." di CHANGELOG.md; rilis batal bila bagian itu tidak ada atau cek gagal.
+name: Release
+
+on:
+  push:
+    tags: [ "v*.*.*" ]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 24.x
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run typecheck
+    - run: npm test
+    - run: npm run build -w client
+
+    - name: Ambil catatan rilis dari CHANGELOG.md
+      run: |
+        awk -v tag="$GITHUB_REF_NAME" '
+          $0 ~ "^## " tag "( |$)" { found = 1; next }
+          found && /^(## |---)/ { exit }
+          found { print }
+        ' CHANGELOG.md > release-notes.md
+        if [ ! -s release-notes.md ]; then
+          echo "::error::Bagian '## $GITHUB_REF_NAME' tidak ditemukan di CHANGELOG.md"
+          exit 1
+        fi
+        cat release-notes.md
+
+    - name: Buat GitHub Release
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file release-notes.md --verify-tag

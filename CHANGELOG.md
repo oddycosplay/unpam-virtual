@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## v0.2.0 - 2026-10-19
+
+Rilis pertama yang diterbitkan di GitHub Releases; sudah mencakup fitur MVP v0.1.0.
+
 ### Added
 
 - halaman Kelola Akun: buat akun dengan password sementara, ubah peran, aktif/nonaktif, reset password

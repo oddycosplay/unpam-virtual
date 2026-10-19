@@ -151,7 +151,7 @@ Logo Universitas Pamulang (`client/public/logo-unpam*.png`, `client/public/favic
 
 ## Release & changelog
 
-See `CHANGELOG.md` for the full list of changes. A draft release is available at `.github/release-draft.md` and can be published as `v0.1.0`.
+See `CHANGELOG.md` for the full list of changes and [GitHub Releases](https://github.com/oddycosplay/unpam-virtual/releases) for published versions. To publish a new version, move the `Unreleased` entries into a `## vX.Y.Z - YYYY-MM-DD` section, bump the workspace versions, then push a tag `vX.Y.Z`: the Release workflow runs the checks and creates the GitHub release from that changelog section.
 
 ---
 
