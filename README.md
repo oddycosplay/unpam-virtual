@@ -12,7 +12,7 @@ Versi saat ini: v0.1.0 — lihat juga CHANGELOG.md untuk catatan rilis.
 
 ---
 
-## TL;DR / Ringkasan singkat
+## Ringkasan singkat
 
 - What: 3D virtual campus (multiplayer) + AI agents for academic help and workflows.
 - Why: prototyping digital campus experiences, AI-assisted academic services, and lightweight real-time multi-user interactions.
