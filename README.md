@@ -1,8 +1,8 @@
-[![CI](https://github.com/oddycosplay/unpam-virtual/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/oddycosplay/unpam-virtual/actions/workflows/node.js.yml) [![Release](https://img.shields.io/badge/release-v0.1.0-blue.svg)](https://github.com/oddycosplay/unpam-virtual/releases) [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE) [![Stars](https://img.shields.io/github/stars/oddycosplay/unpam-virtual?style=social)](https://github.com/oddycosplay/unpam-virtual/stargazers)
-
 # Unpam Virtual — Virtual 3D Campus for UNPAM
 
 Unpam Virtual is a web-based MVP that simulates a small 3D campus environment with AI agents, real-time multiplayer, and administrative workflows for academic use-cases.
+
+[![CI](https://github.com/oddycosplay/unpam-virtual/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/oddycosplay/unpam-virtual/actions/workflows/node.js.yml) [![Release](https://img.shields.io/badge/release-v0.1.0-blue.svg)](https://github.com/oddycosplay/unpam-virtual/releases) [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE) [![Stars](https://img.shields.io/github/stars/oddycosplay/unpam-virtual?style=social)](https://github.com/oddycosplay/unpam-virtual/stargazers)
 
 Versi saat ini: v0.1.0 — lihat juga CHANGELOG.md untuk catatan rilis.
 
