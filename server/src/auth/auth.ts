@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import jwt from "jsonwebtoken";
 import { eq } from "drizzle-orm";
-import { hasPermission, type Permission, type PublicUser, type Role } from "@unpam/shared";
+import { hasPermission, isAvatarLook, type Permission, type PublicUser, type Role } from "@unpam/shared";
 import type { Db } from "../db/client";
 import { users } from "../db/schema";
 
@@ -40,7 +40,14 @@ export function setSessionCookie(reply: FastifyReply, token: string, secure: boo
 }
 
 export function toPublicUser(row: UserRow): PublicUser {
-  return { id: row.id, email: row.email, name: row.name, role: row.roleId, mustChangePassword: row.mustChangePassword };
+  return {
+    id: row.id,
+    email: row.email,
+    name: row.name,
+    role: row.roleId,
+    mustChangePassword: row.mustChangePassword,
+    avatar: isAvatarLook(row.avatar) ? row.avatar : null,
+  };
 }
 
 /** Verifikasi token sesi dan kembalikan baris pengguna yang masih aktif dengan versi sesi yang sama. */

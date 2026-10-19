@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import type {
+  AvatarLook,
   ChatSource,
   Decision,
   LlmProviderKind,
@@ -39,6 +40,8 @@ export const users = sqliteTable("users", {
   mustChangePassword: integer("must_change_password", { mode: "boolean" }).notNull().default(false),
   /** Batas token AI per hari untuk pengguna ini; null = pakai batas global. */
   dailyTokenLimit: integer("daily_token_limit"),
+  /** Avatar kampus 3D (JSON AvatarLook); null = bawaan peran. */
+  avatar: text("avatar", { mode: "json" }).$type<AvatarLook>(),
   createdAt: createdAt(),
 });
 

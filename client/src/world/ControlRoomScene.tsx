@@ -3,7 +3,7 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { Html, OrbitControls, OrthographicCamera } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import * as THREE from "three";
-import { ROLE_INFO, type DashboardSummary, type Role } from "@unpam/shared";
+import { ROLE_INFO, type AvatarLook, type DashboardSummary, type Role } from "@unpam/shared";
 import { AgentBot, DataPulses } from "./agents";
 import { HoloScreen } from "./HoloScreen";
 import { COLORS, ZONES } from "./layout";
@@ -109,10 +109,12 @@ function OrganizationBoard({ hima, ukm, onOpen }: { hima: number; ukm: number; o
 export function Rooms({
   summary,
   viewerRole,
+  viewerLook,
   onOpenOrganizations,
 }: {
   summary: DashboardSummary;
   viewerRole?: Role;
+  viewerLook?: AvatarLook | null;
   onOpenOrganizations?: () => void;
 }) {
   const { stats } = summary;
@@ -252,7 +254,7 @@ export function Rooms({
           size={[2, 1.2]}
           content={{ kind: "gauge", title: "Waktu jawab", value: latencySec, max: 10, unit: " dtk", caption: "target < 10 dtk" }}
         />
-        {viewerRole && <Person position={[-0.7, 0, 0.75]} rotationY={Math.PI} colors={ROLE_COLORS(viewerRole)} label="Anda" />}
+        {viewerRole && <Person position={[-0.7, 0, 0.75]} rotationY={Math.PI} colors={ROLE_COLORS(viewerRole)} look={viewerLook} label="Anda" />}
         <Person position={[0.9, 0, 0.8]} rotationY={Math.PI + 0.3} colors={ROLE_COLORS("dosen")} />
       </group>
     </group>
@@ -262,12 +264,14 @@ export function Rooms({
 export function ControlRoomScene({
   summary,
   viewerRole,
+  viewerLook,
   reducedMotion,
   onSelectAgent,
   onOpenOrganizations,
 }: {
   summary: DashboardSummary;
   viewerRole: Role;
+  viewerLook?: AvatarLook | null;
   reducedMotion: boolean;
   onSelectAgent: (id: string) => void;
   onOpenOrganizations?: () => void;
@@ -309,7 +313,7 @@ export function ControlRoomScene({
       <Floor />
       <Roads />
       <Hub busy={busy} reducedMotion={reducedMotion} />
-      <Rooms summary={summary} viewerRole={viewerRole} onOpenOrganizations={onOpenOrganizations} />
+      <Rooms summary={summary} viewerRole={viewerRole} viewerLook={viewerLook} onOpenOrganizations={onOpenOrganizations} />
       <DataPulses count={pulses} reducedMotion={reducedMotion} />
       {summary.agents.map((agent, i) => (
         <AgentBot

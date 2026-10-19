@@ -65,6 +65,17 @@ function next<E extends keyof ServerToClientEvents>(socket: Client, event: E, un
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 describe("kampus realtime", () => {
+  it("avatar yang diganti langsung terlihat pemain lain", async () => {
+    const a = await join("mahasiswa@unpam.test");
+    const b = await join("dosen@unpam.test");
+    await sleep(150);
+    const look = { shirt: "#2E8B57", accent: "#F5C400", skin: "#C68A5E", hair: "#1F1A17", hairStyle: "panjang", accessory: "topi" };
+    const seen = next(a.socket, "snapshot", (s) => s.players.some((p) => p.id === b.id && p.avatar !== null));
+    const res = await app.inject({ method: "PUT", url: "/api/me/avatar", headers: { cookie: await cookieFor("dosen@unpam.test") }, payload: { avatar: look } });
+    expect(res.statusCode).toBe(200);
+    expect((await seen).players.find((p) => p.id === b.id)?.avatar).toEqual(look);
+  });
+
   it("menolak koneksi tanpa sesi login", async () => {
     const socket: Client = connect(url, { path: "/socket.io", transports: ["websocket"] });
     clients.push(socket);

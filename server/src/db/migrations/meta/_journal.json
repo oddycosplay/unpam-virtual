@@ -43,6 +43,13 @@
       "when": 1792388974688,
       "tag": "0005_daily_bastion",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1792399992347,
+      "tag": "0006_polite_the_fury",
+      "breakpoints": true
     }
   ]
 }

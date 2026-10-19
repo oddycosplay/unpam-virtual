@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
-import type { AgentStatusView } from "@unpam/shared";
+import { DEFAULT_AGENT_APPEARANCE, type AgentAppearance, type AgentStatusView } from "@unpam/shared";
 import { EDGES, NODES, STATUS_COLOR, STATUS_LABEL, route, targetNode, type NodeId } from "./layout";
 
 const SPEED = 2.6; // satuan per detik
@@ -11,6 +11,59 @@ const HOVER_Y = 0.42;
 /** Geser sedikit agar beberapa agent di titik yang sama tidak bertumpuk. */
 function slotOffset(index: number): [number, number] {
   return [[0, 0], [0.75, 0.35], [-0.75, 0.35]][index % 3] as [number, number];
+}
+
+/** Badan robot sesuai tampilan dari admin. Agent nonaktif digambar lebih redup. */
+export function RobotShell({ look, active, glow }: { look: AgentAppearance; active: boolean; glow: THREE.Color }) {
+  const body = useMemo(() => {
+    const c = new THREE.Color(look.body);
+    return active ? c : c.lerp(new THREE.Color("#5b6670"), 0.6);
+  }, [look.body, active]);
+  return (
+    <>
+      {look.style === "kotak" ? (
+        <>
+          <mesh castShadow>
+            <boxGeometry args={[0.6, 0.4, 0.72]} />
+            <meshStandardMaterial color={body} metalness={0.35} roughness={0.3} />
+          </mesh>
+          <mesh position={[0, 0.3, 0]} castShadow>
+            <boxGeometry args={[0.42, 0.26, 0.42]} />
+            <meshStandardMaterial color={body} metalness={0.35} roughness={0.3} />
+          </mesh>
+          <mesh position={[0, 0.31, 0.215]}>
+            <boxGeometry args={[0.34, 0.12, 0.02]} />
+            <meshStandardMaterial color={look.visor} metalness={0.6} roughness={0.15} />
+          </mesh>
+        </>
+      ) : (
+        <>
+          {/* Badan pod */}
+          <mesh castShadow scale={[1, 0.62, 1.25]}>
+            <sphereGeometry args={[0.36, 24, 16]} />
+            <meshStandardMaterial color={body} metalness={0.35} roughness={0.25} />
+          </mesh>
+          {/* Kubah kaca */}
+          <mesh position={[0, 0.13, -0.05]} scale={[0.8, 0.5, 0.9]}>
+            <sphereGeometry args={[0.3, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
+            <meshStandardMaterial color={look.visor} metalness={0.6} roughness={0.15} />
+          </mesh>
+        </>
+      )}
+      {look.style === "antena" && (
+        <group position={[0, 0.26, -0.05]}>
+          <mesh position={[0, 0.12, 0]}>
+            <cylinderGeometry args={[0.012, 0.012, 0.24, 6]} />
+            <meshStandardMaterial color="#9aa7b1" />
+          </mesh>
+          <mesh position={[0, 0.26, 0]}>
+            <sphereGeometry args={[0.045, 12, 12]} />
+            <meshBasicMaterial color={glow} toneMapped={false} />
+          </mesh>
+        </group>
+      )}
+    </>
+  );
 }
 
 export function AgentBot({
@@ -89,16 +142,7 @@ export function AgentBot({
         }}
         scale={hovered ? 1.12 : 1}
       >
-        {/* Badan pod */}
-        <mesh castShadow scale={[1, 0.62, 1.25]}>
-          <sphereGeometry args={[0.36, 24, 16]} />
-          <meshStandardMaterial color={agent.active ? "#dfe8ee" : "#7d8a94"} metalness={0.35} roughness={0.25} />
-        </mesh>
-        {/* Kubah kaca */}
-        <mesh position={[0, 0.13, -0.05]} scale={[0.8, 0.5, 0.9]}>
-          <sphereGeometry args={[0.3, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
-          <meshStandardMaterial color="#20313b" metalness={0.6} roughness={0.15} />
-        </mesh>
+        <RobotShell look={agent.appearance ?? DEFAULT_AGENT_APPEARANCE[agent.id]} active={agent.active} glow={glow} />
         {/* Sabuk cahaya status */}
         <mesh rotation={[Math.PI / 2, 0, 0]} scale={[1, 1.25, 1]}>
           <torusGeometry args={[0.36, 0.025, 8, 40]} />

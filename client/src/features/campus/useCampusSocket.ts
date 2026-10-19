@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import type {
   AgentStatusView,
+  AvatarLook,
   ClientToServerEvents,
   PlayerState,
   ProximityMessage,
@@ -19,6 +20,9 @@ export function useCampusSocket() {
   const socketRef = useRef<CampusSocket | null>(null);
   const playersRef = useRef<Map<string, PlayerState>>(new Map());
   const [playerIds, setPlayerIds] = useState<string[]>([]);
+  // Avatar per pemain sebagai state (bukan ref) agar avatar yang diganti langsung digambar ulang.
+  const [avatars, setAvatars] = useState<Record<string, AvatarLook | null>>({});
+  const avatarKey = useRef("");
   const [selfId, setSelfId] = useState<string | null>(null);
   const [spawn, setSpawn] = useState<{ x: number; z: number } | null>(null);
   const [agents, setAgents] = useState<AgentStatusView[]>([]);
@@ -44,6 +48,11 @@ export function useCampusSocket() {
     socket.on("snapshot", (s) => {
       const map = new Map(s.players.map((p) => [p.id, p]));
       playersRef.current = map;
+      const key = s.players.map((p) => `${p.id}:${JSON.stringify(p.avatar)}`).join("|");
+      if (key !== avatarKey.current) {
+        avatarKey.current = key;
+        setAvatars(Object.fromEntries(s.players.map((p) => [p.id, p.avatar])));
+      }
       setPlayerIds((prev) => {
         const next = [...map.keys()].sort();
         return prev.length === next.length && prev.every((id, i) => id === next[i]) ? prev : next;
@@ -71,5 +80,5 @@ export function useCampusSocket() {
     socketRef.current?.emit("chat:send", text);
   }, []);
 
-  return { playersRef, playerIds, selfId, spawn, agents, messages, chatError, connection, sendMove, sendChat };
+  return { playersRef, playerIds, avatars, selfId, spawn, agents, messages, chatError, connection, sendMove, sendChat };
 }

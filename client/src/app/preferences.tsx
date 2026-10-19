@@ -3,7 +3,11 @@ import { useAuth } from "../features/auth/AuthContext";
 
 export type DashPanel = "head" | "agents" | "activity";
 
+export type ThemeChoice = "system" | "light" | "dark";
+
 export interface Preferences {
+  /** Tema halaman biasa. Halaman 3D (dashboard, kampus, konsep) selalu gelap. */
+  theme: ThemeChoice;
   /** "auto": sidebar menjadi rel ikon dan melebar saat diarahkan; "pinned": selalu tampil penuh. */
   sidebar: "auto" | "pinned";
   /** Lebar maksimum isi halaman biasa. */
@@ -15,6 +19,7 @@ export interface Preferences {
 }
 
 export const DEFAULT_PREFERENCES: Preferences = {
+  theme: "system",
   sidebar: "auto",
   pageWidth: "wide",
   collapsed: { head: false, agents: false, activity: false },
@@ -22,9 +27,36 @@ export const DEFAULT_PREFERENCES: Preferences = {
 };
 
 const storageKey = (userId: number) => `unpam:prefs:${userId}`;
+/** Tema terakhir di perangkat ini, dipakai halaman login sebelum tahu siapa penggunanya. */
+const LAST_THEME_KEY = "unpam:theme";
+
+function systemDark(): boolean {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+/** Tema yang benar-benar dipakai setelah "ikuti sistem" diterjemahkan. */
+export function useResolvedTheme(choice: ThemeChoice): "light" | "dark" {
+  const [dark, setDark] = useState(systemDark);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => setDark(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return choice === "system" ? (dark ? "dark" : "light") : choice;
+}
+
+function lastTheme(): ThemeChoice {
+  try {
+    const v = localStorage.getItem(LAST_THEME_KEY);
+    return v === "light" || v === "dark" ? v : "system";
+  } catch {
+    return "system";
+  }
+}
 
 function load(userId: number | undefined): Preferences {
-  if (userId === undefined) return DEFAULT_PREFERENCES;
+  if (userId === undefined) return { ...DEFAULT_PREFERENCES, theme: lastTheme() };
   try {
     const raw = localStorage.getItem(storageKey(userId));
     if (!raw) return DEFAULT_PREFERENCES;
@@ -37,6 +69,7 @@ function load(userId: number | undefined): Preferences {
 
 interface PreferencesValue {
   prefs: Preferences;
+  theme: "light" | "dark";
   update: (patch: Partial<Preferences>) => void;
   togglePanel: (panel: DashPanel) => void;
   reset: () => void;
@@ -54,6 +87,16 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     setPrefs(load(userId));
   }, [userId]);
 
+  const theme = useResolvedTheme(prefs.theme);
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem(LAST_THEME_KEY, prefs.theme);
+    } catch {
+      // abaikan
+    }
+  }, [theme, prefs.theme]);
+
   const save = useCallback(
     (next: Preferences) => {
       setPrefs(next);
@@ -70,11 +113,12 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   const value = useMemo<PreferencesValue>(
     () => ({
       prefs,
+      theme,
       update: (patch) => save({ ...prefs, ...patch }),
       togglePanel: (panel) => save({ ...prefs, collapsed: { ...prefs.collapsed, [panel]: !prefs.collapsed[panel] } }),
       reset: () => save(DEFAULT_PREFERENCES),
     }),
-    [prefs, save],
+    [prefs, theme, save],
   );
 
   return <PreferencesContext.Provider value={value}>{children}</PreferencesContext.Provider>;

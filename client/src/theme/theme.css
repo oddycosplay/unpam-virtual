@@ -805,6 +805,105 @@ button.ghost.danger { color: var(--danger); }
   .dash-left { display: contents; }
 }
 
+/* Editor avatar dan robot */
+.appearance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 1rem; align-items: start; }
+.appearance-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 1.25rem; margin-top: 0.75rem; }
+.appearance-stage { position: relative; }
+.appearance-preview { width: 200px; height: 260px; border-radius: 12px; overflow: hidden; background: #0f1922; }
+.appearance-controls { display: grid; gap: 0.75rem; align-content: start; }
+.swatches, .option-pills { border: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.swatches legend, .option-pills legend { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.35rem; padding: 0; }
+.swatch {
+  width: 28px; height: 28px; padding: 0; border-radius: 50%;
+  border: 2px solid var(--border); box-shadow: inset 0 0 0 2px var(--surface);
+}
+.swatch:hover:not(:disabled) { filter: brightness(1.08); }
+.swatch[aria-pressed="true"] { border-color: var(--link); box-shadow: inset 0 0 0 2px var(--surface), 0 0 0 2px var(--link); }
+.swatch.custom {
+  position: relative; display: inline-block; margin: 0; overflow: hidden; cursor: pointer;
+  background: conic-gradient(#f44, #fd0, #4d4, #4cf, #44f, #d4f, #f44);
+}
+.swatch.custom input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; margin: 0; padding: 0; cursor: pointer; }
+.option-pills button {
+  padding: 0.35rem 0.7rem; font-size: 0.84rem; font-weight: 600; border-radius: 999px;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+}
+.option-pills button:hover:not(:disabled) { background: var(--surface-3); }
+.option-pills button[aria-pressed="true"] { background: var(--si-blue); border-color: var(--si-blue); color: #fff; }
+.row-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+@media (max-width: 560px) {
+  .appearance-grid { grid-template-columns: 1fr; }
+  .appearance-layout { grid-template-columns: 1fr; justify-items: center; }
+  .appearance-controls { justify-self: stretch; }
+}
+
+/* ---------- Tema gelap (Pengaturan → Tema). Halaman 3D sudah gelap sendiri. ---------- */
+:root { --surface-2: #f4f7fb; --surface-3: #eaf1fb; --link: var(--si-blue); }
+:root[data-theme="dark"] {
+  --bg: #0a1117;
+  --surface: #111b24;
+  --surface-2: #172430;
+  --surface-3: #1f3040;
+  --text: #e2ebf2;
+  --muted: #94a6b5;
+  --border: #253645;
+  --success: #4ade80;
+  --danger: #ff8a80;
+  --link: #8ab8ff;
+  color-scheme: dark;
+}
+:root[data-theme="dark"] :is(.page, .login) a:not(.button-link) { color: var(--link); }
+:root[data-theme="dark"] input, :root[data-theme="dark"] select, :root[data-theme="dark"] textarea { color: var(--text); background: var(--surface-2); }
+:root[data-theme="dark"] button.secondary, :root[data-theme="dark"] button.chip, :root[data-theme="dark"] .secondary-link,
+:root[data-theme="dark"] .link-button { color: var(--link); }
+:root[data-theme="dark"] button.secondary { border-color: var(--link); }
+:root[data-theme="dark"] .brand-logo.large { filter: none; }
+:root[data-theme="dark"] .choice:has(input:checked) { border-color: var(--link); }
+/* Dibuat otomatis dari warna terang di atas: latar terang → permukaan gelap, teks gelap → lebih terang. */
+:root[data-theme="dark"] input, :root[data-theme="dark"] select { background: var(--surface-2); }
+:root[data-theme="dark"] button.secondary { background: var(--surface-2); }
+:root[data-theme="dark"] button.secondary:hover:not(:disabled) { background: rgba(234, 241, 251, 0.14); }
+:root[data-theme="dark"] button.ghost:hover:not(:disabled) { background: var(--surface-3); }
+:root[data-theme="dark"] .role-badge { background: var(--surface-2); }
+:root[data-theme="dark"] button.chip { background: var(--surface-2); }
+:root[data-theme="dark"] button.chip:hover:not(:disabled) { background: rgba(234, 241, 251, 0.14); }
+:root[data-theme="dark"] .bubble.assistant { background: var(--surface-2); }
+:root[data-theme="dark"] .bubble.is-error { background: rgba(253, 241, 240, 0.14); border-color: var(--border); }
+:root[data-theme="dark"] .callout { background: rgba(234, 241, 251, 0.14); }
+:root[data-theme="dark"] .callout.warn { background: rgba(255, 248, 219, 0.14); border-color: var(--border); }
+:root[data-theme="dark"] .callout.bad { background: rgba(253, 241, 240, 0.14); border-color: var(--border); }
+:root[data-theme="dark"] .status-badge { background: var(--surface-2); color: #b1b6bd; }
+:root[data-theme="dark"] .st-menyusun { background: rgba(230, 240, 255, 0.14); color: #a5bde2; }
+:root[data-theme="dark"] .st-gagal, :root[data-theme="dark"] .st-ditolak { background: rgba(253, 232, 230, 0.14); color: #e1a7a2; }
+:root[data-theme="dark"] .st-draft { background: var(--surface-2); color: #b1b6bd; }
+:root[data-theme="dark"] .st-menunggu_persetujuan { background: rgba(255, 244, 194, 0.14); color: #c9bd99; }
+:root[data-theme="dark"] .st-revisi { background: rgba(255, 233, 209, 0.14); color: #d3b59d; }
+:root[data-theme="dark"] .st-disetujui { background: rgba(221, 245, 229, 0.14); color: #a2ccb1; }
+:root[data-theme="dark"] .board-col { background: var(--surface-2); }
+:root[data-theme="dark"] .segmented .active.d-disetujui { background: rgba(221, 245, 229, 0.14); color: #a2ccb1; }
+:root[data-theme="dark"] .segmented .active.d-revisi { background: rgba(255, 233, 209, 0.14); border-color: var(--border); color: #d3b59d; }
+:root[data-theme="dark"] .segmented .active.d-ditolak { background: rgba(253, 232, 230, 0.14); border-color: var(--border); color: #e1a7a2; }
+:root[data-theme="dark"] .bell-button:hover:not(:disabled) { background: var(--surface-3); }
+:root[data-theme="dark"] .bell-panel li button:hover:not(:disabled) { background: var(--surface-3); }
+:root[data-theme="dark"] .bell-panel li button.unread { background: rgba(240, 246, 255, 0.14); }
+:root[data-theme="dark"] .secondary-link { background: var(--surface-2); }
+:root[data-theme="dark"] .secondary-link:hover { background: rgba(234, 241, 251, 0.14); }
+:root[data-theme="dark"] .audit-row.kind-error { background: var(--surface-2); }
+:root[data-theme="dark"] .actor-chip { background: var(--surface-2); color: #b1b6bd; }
+:root[data-theme="dark"] .actor-agent { background: rgba(230, 240, 255, 0.14); }
+:root[data-theme="dark"] .actor-system { background: rgba(241, 236, 255, 0.14); color: #bdb2df; }
+:root[data-theme="dark"] .temp-password code { background: var(--surface-2); }
+:root[data-theme="dark"] .tag.warn { background: rgba(255, 244, 194, 0.14); color: #c9bd99; }
+:root[data-theme="dark"] .usage-track { background: var(--surface-2); }
+:root[data-theme="dark"] .password-banner { background: rgba(255, 244, 194, 0.14); color: #bdb499; }
+:root[data-theme="dark"] .password-banner a { color: #bdb499; }
+:root[data-theme="dark"] .org-list li.own { background: rgba(255, 251, 234, 0.14); }
+:root[data-theme="dark"] .org-number { background: rgba(234, 241, 251, 0.14); }
+:root[data-theme="dark"] .own-tag { color: #b1ab99; }
+:root[data-theme="dark"] .test-result { background: var(--surface-2); }
+:root[data-theme="dark"] .choice:has(input:checked) { background: var(--surface-2); }
+
+
 /* ---------- Landing page (dari commit GitHub "Add landing page styling") ---------- */
 .landing-shell {
   min-height: 100vh;

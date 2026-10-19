@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Edges, Html } from "@react-three/drei";
 import * as THREE from "three";
+import type { AvatarLook } from "@unpam/shared";
 import { COLORS, EDGES, NODES, type Vec2, type Zone } from "./layout";
 
 const glowMaterial = (color: string, intensity = 2.2) => (
@@ -214,23 +215,96 @@ export function Chair({ position, rotationY = 0 }: { position: [number, number, 
   );
 }
 
-/** Orang sederhana. colors = warna peran (PRD §3): badan, aksen, aksen kedua. */
+/** Rambut, hijab, dan aksesori di kepala. Titik nol = pusat kepala. */
+function HeadWear({ look, hatColor }: { look: Pick<AvatarLook, "hair" | "hairStyle" | "accessory">; hatColor: string }) {
+  const { hair, hairStyle, accessory } = look;
+  return (
+    <>
+      {hairStyle === "pendek" && (
+        <mesh position={[0, 0.08, -0.02]}>
+          <sphereGeometry args={[0.145, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
+          <meshStandardMaterial color={hair} />
+        </mesh>
+      )}
+      {hairStyle === "panjang" && (
+        <>
+          <mesh position={[0, 0.08, -0.02]}>
+            <sphereGeometry args={[0.15, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
+            <meshStandardMaterial color={hair} />
+          </mesh>
+          <mesh position={[0, -0.06, -0.09]}>
+            <boxGeometry args={[0.27, 0.3, 0.08]} />
+            <meshStandardMaterial color={hair} />
+          </mesh>
+        </>
+      )}
+      {hairStyle === "hijab" && (
+        <>
+          {/* Wajah tetap menonjol di depan karena kepala (r 0.14) lebih maju dari kerudung. */}
+          <mesh position={[0, 0.01, -0.035]}>
+            <sphereGeometry args={[0.162, 18, 16]} />
+            <meshStandardMaterial color={hair} roughness={0.8} />
+          </mesh>
+          <mesh position={[0, -0.16, -0.01]}>
+            <cylinderGeometry args={[0.13, 0.21, 0.16, 18]} />
+            <meshStandardMaterial color={hair} roughness={0.8} />
+          </mesh>
+        </>
+      )}
+      {accessory === "kacamata" && (
+        <group position={[0, 0.01, 0.13]}>
+          {[-0.055, 0.055].map((x) => (
+            <mesh key={x} position={[x, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
+              <torusGeometry args={[0.035, 0.009, 6, 16]} />
+              <meshStandardMaterial color="#111827" />
+            </mesh>
+          ))}
+          <mesh>
+            <boxGeometry args={[0.04, 0.008, 0.008]} />
+            <meshStandardMaterial color="#111827" />
+          </mesh>
+        </group>
+      )}
+      {accessory === "topi" && (
+        <group position={[0, 0.1, 0]}>
+          <mesh>
+            <sphereGeometry args={[0.152, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
+            <meshStandardMaterial color={hatColor} />
+          </mesh>
+          <mesh position={[0, 0.005, 0.13]} rotation={[0.15, 0, 0]}>
+            <boxGeometry args={[0.2, 0.015, 0.14]} />
+            <meshStandardMaterial color={hatColor} />
+          </mesh>
+        </group>
+      )}
+    </>
+  );
+}
+
+/**
+ * Orang sederhana. colors = warna peran (PRD §3): badan, aksen, aksen kedua.
+ * look = avatar pilihan pengguna; garis aksen kedua tetap warna peran agar peran mudah dikenali.
+ */
 export function Person({
   position,
   rotationY = 0,
   colors,
+  look,
   seated = false,
   label,
 }: {
   position: [number, number, number];
   rotationY?: number;
   colors: string[];
+  look?: AvatarLook | null;
   seated?: boolean;
   label?: string;
 }) {
-  const body = colors[0] ?? COLORS.siBlue;
-  const accent = colors[1] ?? body;
+  const body = look?.shirt ?? colors[0] ?? COLORS.siBlue;
+  const accent = look?.accent ?? colors[1] ?? body;
   const accent2 = colors[2];
+  const skin = look?.skin ?? COLORS.skin;
+  const head = look ?? { hair: COLORS.hair, hairStyle: "pendek" as const, accessory: "none" as const };
   const legY = seated ? 0.42 : 0.3;
   return (
     <group position={position} rotation={[0, rotationY, 0]}>
@@ -250,7 +324,7 @@ export function Person({
         <capsuleGeometry args={[0.17, 0.36, 6, 12]} />
         <meshStandardMaterial color={body} roughness={0.6} />
       </mesh>
-      {/* Kerah/aksen warna peran */}
+      {/* Kerah/aksen */}
       <mesh position={[0, legY + 0.62, 0.02]}>
         <cylinderGeometry args={[0.13, 0.17, 0.08, 12]} />
         <meshStandardMaterial color={accent} />
@@ -261,14 +335,13 @@ export function Person({
           <meshStandardMaterial color={accent2} emissive={accent2} emissiveIntensity={0.3} />
         </mesh>
       )}
-      <mesh position={[0, legY + 0.84, 0]} castShadow>
-        <sphereGeometry args={[0.14, 16, 16]} />
-        <meshStandardMaterial color={COLORS.skin} roughness={0.7} />
-      </mesh>
-      <mesh position={[0, legY + 0.92, -0.02]}>
-        <sphereGeometry args={[0.145, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <meshStandardMaterial color={COLORS.hair} />
-      </mesh>
+      <group position={[0, legY + 0.84, 0]}>
+        <mesh castShadow>
+          <sphereGeometry args={[0.14, 16, 16]} />
+          <meshStandardMaterial color={skin} roughness={0.7} />
+        </mesh>
+        <HeadWear look={head} hatColor={accent} />
+      </group>
       {label && (
         <Html position={[0, legY + 1.25, 0]} center className="person-label" zIndexRange={[20, 0]}>
           <span>{label}</span>

@@ -1,4 +1,5 @@
 import type { Role } from "./roles";
+import type { AgentAppearance, AgentId, AvatarLook } from "./appearance";
 import type { AgentStatus, TaskStatus } from "./status";
 
 export interface PublicUser {
@@ -8,6 +9,8 @@ export interface PublicUser {
   role: Role;
   /** Masih memakai password sementara dari admin. */
   mustChangePassword?: boolean;
+  /** Avatar kampus 3D pilihan pengguna; null = bawaan sesuai peran. */
+  avatar?: AvatarLook | null;
 }
 
 export interface LoginRequest {
@@ -80,12 +83,14 @@ export interface KnowledgeDocumentView {
 }
 
 export interface AgentStatusView {
-  id: "orkestrator" | "akademik" | "hima";
+  id: AgentId;
   name: string;
   status: AgentStatus;
   /** Teks pendek untuk label di atas agent, mis. "Menjawab pertanyaan jadwal". */
   activity: string;
   active: boolean;
+  /** Tampilan robot yang diatur admin. */
+  appearance?: AgentAppearance;
 }
 
 export interface ActivityItem {

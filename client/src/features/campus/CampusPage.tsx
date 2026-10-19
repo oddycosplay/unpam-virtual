@@ -141,9 +141,10 @@ export function CampusPage() {
               <CampusScene
                 summary={summary}
                 agents={campus.agents}
-                self={{ role: user.role, name: user.name }}
+                self={{ role: user.role, name: user.name, look: user.avatar }}
                 playersRef={campus.playersRef}
                 playerIds={campus.playerIds}
+                avatars={campus.avatars}
                 selfId={campus.selfId}
                 selfRef={selfRef}
                 targetRef={targetRef}

@@ -39,7 +39,7 @@ function Layout() {
   const { user, loading, logout } = useAuth();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const { prefs } = usePreferences();
+  const { prefs, theme } = usePreferences();
   const fullBleed = location.pathname === "/" || location.pathname === "/kampus" || location.pathname === "/konsep";
 
   // Tutup laci menu (mobile) saat pindah halaman atau menekan Escape.
@@ -58,7 +58,7 @@ function Layout() {
 
   return (
     <div
-      className={["shell", fullBleed && "shell-dark", prefs.sidebar === "auto" && "side-auto", prefs.pageWidth === "wide" && "page-wide"]
+      className={["shell", (fullBleed || theme === "dark") && "shell-dark", prefs.sidebar === "auto" && "side-auto", prefs.pageWidth === "wide" && "page-wide"]
         .filter(Boolean)
         .join(" ")}
     >

@@ -84,6 +84,8 @@ export function describe(row: AuditRow): Pick<ActivityItem, "text" | "kind"> {
       return d.ok
         ? { kind: "system", text: `Uji koneksi provider AI berhasil (${d.latencyMs} ms)` }
         : { kind: "error", text: "Uji koneksi provider AI gagal" };
+    case "config.agent_appearance_updated":
+      return { kind: "system", text: `${who} mengubah tampilan robot agent` };
     default:
       return { kind: "system", text: row.action };
   }

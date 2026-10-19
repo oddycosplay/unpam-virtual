@@ -87,6 +87,7 @@ export function DashboardPage() {
             <ControlRoomScene
               summary={summary}
               viewerRole={user.role}
+              viewerLook={user.avatar}
               reducedMotion={reducedMotion}
               onSelectAgent={() => canChat && navigate("/chat")}
               onOpenOrganizations={() => navigate("/organisasi")}

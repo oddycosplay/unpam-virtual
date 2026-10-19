@@ -3,3 +3,4 @@ export * from "./status";
 export * from "./api-types";
 export * from "./realtime";
 export * from "./campus";
+export * from "./appearance";

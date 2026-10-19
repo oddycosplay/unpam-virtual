@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber"
 import { Html, OrbitControls, OrthographicCamera } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import * as THREE from "three";
-import { CAMPUS_BOUNDS, MOVE_SPEED, ROLE_INFO, type AgentStatusView, type DashboardSummary, type PlayerState, type Role } from "@unpam/shared";
+import { CAMPUS_BOUNDS, MOVE_SPEED, ROLE_INFO, type AgentStatusView, type AvatarLook, type DashboardSummary, type PlayerState, type Role } from "@unpam/shared";
 import { AgentBot, DataPulses } from "./agents";
 import { Rooms } from "./ControlRoomScene";
 import { ZONES, moveWithCollision } from "./layout";
@@ -46,6 +46,7 @@ function isTyping(target: EventTarget | null): boolean {
 
 function Avatar({
   role,
+  look,
   name,
   isSelf,
   bubble,
@@ -53,6 +54,7 @@ function Avatar({
   movingRef,
 }: {
   role: Role;
+  look: AvatarLook | null;
   name: string;
   isSelf: boolean;
   bubble?: string;
@@ -66,7 +68,7 @@ function Avatar({
   return (
     <group ref={groupRef}>
       <group ref={body}>
-        <Person position={[0, 0, 0]} colors={ROLE_INFO[role].colors} />
+        <Person position={[0, 0, 0]} colors={ROLE_INFO[role].colors} look={look} />
       </group>
       {/* Cincin penanda di kaki */}
       <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
@@ -86,6 +88,7 @@ function Avatar({
 /** Avatar milik pemain ini: dikendalikan keyboard/klik, kamera mengikuti. */
 function SelfPlayer({
   role,
+  look,
   name,
   selfRef,
   targetRef,
@@ -93,6 +96,7 @@ function SelfPlayer({
   onMove,
 }: {
   role: Role;
+  look: AvatarLook | null;
   name: string;
   selfRef: MutableRefObject<SelfState>;
   targetRef: MutableRefObject<FloorTarget | null>;
@@ -201,11 +205,21 @@ function SelfPlayer({
     }
   });
 
-  return <Avatar role={role} name={name} isSelf bubble={bubble} groupRef={group} movingRef={moving} />;
+  return <Avatar role={role} look={look} name={name} isSelf bubble={bubble} groupRef={group} movingRef={moving} />;
 }
 
 /** Pemain lain: posisi dari snapshot server, digerakkan halus ke posisi terbaru. */
-function RemotePlayer({ id, playersRef, bubble }: { id: string; playersRef: MutableRefObject<Map<string, PlayerState>>; bubble?: string }) {
+function RemotePlayer({
+  id,
+  look,
+  playersRef,
+  bubble,
+}: {
+  id: string;
+  look: AvatarLook | null;
+  playersRef: MutableRefObject<Map<string, PlayerState>>;
+  bubble?: string;
+}) {
   const group = useRef<THREE.Group | null>(null);
   const moving = useRef(false);
   const initial = playersRef.current.get(id);
@@ -223,7 +237,7 @@ function RemotePlayer({ id, playersRef, bubble }: { id: string; playersRef: Muta
   });
 
   if (!initial) return null;
-  return <Avatar role={initial.role} name={initial.name} isSelf={false} bubble={bubble} groupRef={group} movingRef={moving} />;
+  return <Avatar role={initial.role} look={look} name={initial.name} isSelf={false} bubble={bubble} groupRef={group} movingRef={moving} />;
 }
 
 /** Klik di lantai untuk berjalan ke titik itu (bukan saat memutar kamera). */
@@ -294,6 +308,7 @@ export function CampusScene({
   self,
   playersRef,
   playerIds,
+  avatars,
   selfId,
   selfRef,
   targetRef,
@@ -306,9 +321,11 @@ export function CampusScene({
 }: {
   summary: DashboardSummary;
   agents: AgentStatusView[];
-  self: { role: Role; name: string };
+  self: { role: Role; name: string; look?: AvatarLook | null };
   playersRef: MutableRefObject<Map<string, PlayerState>>;
   playerIds: string[];
+  /** Avatar tiap pemain menurut id koneksi. */
+  avatars: Record<string, AvatarLook | null>;
   selfId: string | null;
   selfRef: MutableRefObject<SelfState>;
   targetRef: MutableRefObject<FloorTarget | null>;
@@ -366,11 +383,11 @@ export function CampusScene({
         <AgentBot key={agent.id} agent={agent} index={i} reducedMotion={reducedMotion} onSelect={() => onSelectAgent(agent.id)} />
       ))}
 
-      <SelfPlayer role={self.role} name={self.name} selfRef={selfRef} targetRef={targetRef} bubble={selfId ? bubbles[selfId] : undefined} onMove={onMove} />
+      <SelfPlayer role={self.role} look={self.look ?? null} name={self.name} selfRef={selfRef} targetRef={targetRef} bubble={selfId ? bubbles[selfId] : undefined} onMove={onMove} />
       {playerIds
         .filter((id) => id !== selfId)
         .map((id) => (
-          <RemotePlayer key={id} id={id} playersRef={playersRef} bubble={bubbles[id]} />
+          <RemotePlayer key={id} id={id} look={avatars[id] ?? null} playersRef={playersRef} bubble={bubbles[id]} />
         ))}
 
       <EffectComposer multisampling={4}>

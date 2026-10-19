@@ -1,5 +1,6 @@
 import type { AgentStatusView } from "./api-types";
 import type { Role } from "./roles";
+import type { AvatarLook } from "./appearance";
 
 // Protokol Socket.IO kampus 3D (tahap 5). Satuan posisi = satuan dunia 3D (±1 meter).
 
@@ -22,6 +23,7 @@ export interface PlayerState {
   /** Arah hadap (radian, sumbu y). */
   rot: number;
   moving: boolean;
+  avatar: AvatarLook | null;
 }
 
 export interface CampusSnapshot {

@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { usePreferences, type DashPanel, type Preferences } from "../../app/preferences";
+import { hasPermission } from "@unpam/shared";
 import { useAuth } from "../auth/AuthContext";
+import { AvatarEditor, RobotEditor } from "./AppearanceEditors";
 
 const PANELS: { id: DashPanel; label: string }[] = [
   { id: "head", label: "Pusat Kendali (statistik hari ini)" },
@@ -8,7 +10,7 @@ const PANELS: { id: DashPanel; label: string }[] = [
   { id: "activity", label: "Aktivitas terbaru" },
 ];
 
-function Choice<K extends "sidebar" | "pageWidth">({
+function Choice<K extends "sidebar" | "pageWidth" | "theme">({
   name,
   value,
   options,
@@ -48,7 +50,26 @@ export function SettingsPage() {
         </div>
       </header>
 
+      <div className="appearance-grid">
+        <AvatarEditor />
+        {hasPermission(user.role, "admin:config") && <RobotEditor />}
+      </div>
+
       <div className="admin-grid">
+        <section className="card" aria-labelledby="set-theme">
+          <h2 id="set-theme">Tema</h2>
+          <Choice
+            name="theme"
+            value={prefs.theme}
+            onChange={(theme) => update({ theme })}
+            options={[
+              { value: "system", label: "Ikuti sistem", hint: "Terang atau gelap mengikuti pengaturan perangkat." },
+              { value: "light", label: "Terang", hint: "Latar terang untuk ruangan yang cerah." },
+              { value: "dark", label: "Gelap", hint: "Lebih nyaman di malam hari. Halaman 3D selalu gelap." },
+            ]}
+          />
+        </section>
+
         <section className="card" aria-labelledby="set-layout">
           <h2 id="set-layout">Tata letak</h2>
           <h3>Sidebar</h3>

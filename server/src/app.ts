@@ -21,6 +21,8 @@ import { JobTracker } from "./agents/jobs";
 import { LoginLimiter, registerSecurity } from "./auth/security";
 import { backupRoutes } from "./modules/backup/routes";
 import { organizationRoutes } from "./modules/organizations/routes";
+import { appearanceRoutes } from "./modules/appearance/routes";
+import type { AvatarLook } from "@unpam/shared";
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
@@ -33,6 +35,8 @@ export interface AppContext {
   /** Pekerjaan agent di latar belakang (mis. menyusun proposal). */
   jobs: JobTracker;
   loginLimiter: LoginLimiter;
+  /** Dipasang oleh kampus realtime agar avatar baru langsung terlihat pemain lain. */
+  onAvatarChange?: (userId: number, avatar: AvatarLook | null) => void;
 }
 
 export async function buildApp(
@@ -64,6 +68,7 @@ export async function buildApp(
   auditRoutes(app, ctx);
   backupRoutes(app, ctx);
   organizationRoutes(app, ctx);
+  appearanceRoutes(app, ctx);
   attachCampus(app, ctx);
 
   app.addHook("onClose", async () => ctx.jobs.idle());

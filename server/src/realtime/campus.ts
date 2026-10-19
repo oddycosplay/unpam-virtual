@@ -60,7 +60,7 @@ export function attachCampus(app: FastifyInstance, ctx: AppContext): Server<Clie
     const z = SPAWN.z + (Math.random() - 0.5) * 0.6;
     socket.data = {
       user,
-      state: { id: socket.id, userId: user.id, name: user.name, role: user.role, x, z, rot: Math.PI, moving: false },
+      state: { id: socket.id, userId: user.id, name: user.name, role: user.role, x, z, rot: Math.PI, moving: false, avatar: user.avatar ?? null },
       lastChatAt: 0,
     };
     next();
@@ -114,6 +114,14 @@ export function attachCampus(app: FastifyInstance, ctx: AppContext): Server<Clie
       dirty = true;
     });
   });
+
+  // Avatar diganti di Pengaturan: perbarui semua tab pengguna itu dan siarkan.
+  ctx.onAvatarChange = (userId, avatar) => {
+    for (const s of io.of("/").sockets.values()) {
+      if (s.data.state?.userId === userId) s.data.state.avatar = avatar;
+    }
+    dirty = true;
+  };
 
   // Siarkan posisi bila ada perubahan, dan status agent bila berubah.
   let dirty = false;

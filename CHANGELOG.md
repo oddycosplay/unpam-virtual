@@ -15,6 +15,9 @@
 - logo Universitas Pamulang di aplikasi, favicon, dan README
 - halaman Konsep Kampus: denah 3D multi-prodi (ruang prodi, ruang HIMA, orkestrator per prodi), Rektorat, LKA, LSP, dan Student Center 18 UKM
 - info lisensi di halaman login
+- halaman Pengaturan per pengguna: tema terang/gelap/ikuti sistem, sidebar sembunyi otomatis, lebar halaman, panel dashboard yang dilipat
+- avatar kampus 3D bisa dikustom (baju, kerah, kulit, rambut/hijab, aksesori) dan langsung terlihat pemain lain
+- admin bisa mengatur tampilan robot agent (bentuk, warna badan, visor)
 
 ### Security
 
