@@ -28,9 +28,23 @@ Versi saat ini: v0.1.0 — lihat juga CHANGELOG.md untuk catatan rilis.
 
 ## Demo / Screenshot
 
-(Anda bisa menambahkan screenshot di `docs/screenshot.png` dan update URL di bawah ini.)
+![Mockup Unpam Virtual: dashboard ruang kendali di desktop dan kampus 3D di ponsel](docs/screenshots/mockup.png)
 
-![screenshot placeholder](docs/screenshot.png)
+| Kampus 3D multiplayer | Dashboard ruang kendali |
+| --- | --- |
+| ![Kampus 3D dengan avatar, gelembung chat jarak dekat, robot agent, dan minimap](docs/screenshots/kampus.png) | ![Dashboard isometrik dengan status agent, statistik, dan aktivitas terbaru](docs/screenshots/dashboard.png) |
+| Avatar per peran, proximity chat radius 6 m, minimap, dan agent yang bergerak sesuai status. | Hub Orkestrator, layar hologram berisi data nyata, dan log aktivitas. |
+
+| Agent Akademik (RAG + sumber) | Proposal HIMA → persetujuan Kaprodi |
+| --- | --- |
+| ![Chat Agent Akademik dengan rujukan dan kutipan dokumen sumber](docs/screenshots/agent-akademik.png) | ![Detail proposal dengan riwayat versi dan keputusan Kaprodi](docs/screenshots/proposal.png) |
+| Jawaban hanya dari dokumen resmi, setiap fakta diberi rujukan [n]. | Draf disusun Agent HIMA, disunting pengurus, lalu diputuskan Kaprodi. |
+
+| Papan tugas | Log audit | Kelola akun |
+| --- | --- | --- |
+| ![Papan tugas empat kolom](docs/screenshots/papan-tugas.png) | ![Log audit dengan filter dan detail](docs/screenshots/log-audit.png) | ![Kelola akun dengan peran dan kuota AI](docs/screenshots/kelola-akun.png) |
+
+<sub>Semua data pada gambar adalah data contoh fiktif dari seed pengembangan. Mockup dibuat dari screenshot aplikasi yang berjalan.</sub>
 
 ---
 
