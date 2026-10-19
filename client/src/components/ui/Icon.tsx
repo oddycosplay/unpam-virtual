@@ -16,6 +16,10 @@ const PATHS = {
   menu: "M4 7h16M4 12h16M4 17h16",
   close: "M6 6l12 12M18 6 6 18",
   download: "M12 4v11M7 10l5 5 5-5M5 20h14",
+  settings: "M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M8 10v4M16 16v4",
+  pin: "M9 4h6l-1 6 3 3H7l3-3-1-6ZM12 13v7",
+  sidebar: "M4 4h16v16H4zM9 4v16",
+  chevron: "M6 9l6 6 6-6",
 } as const;
 
 export type IconName = keyof typeof PATHS;

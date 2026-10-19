@@ -733,6 +733,78 @@ button.ghost.danger { color: var(--danger); }
   .concept-label em { display: none; }
 }
 
+/* ---------- Preferensi: sidebar sembunyi otomatis, halaman lebar, panel dashboard dilipat ---------- */
+.page-wide .page { max-width: 1480px; padding-left: 1.5rem; padding-right: 1.5rem; }
+.sidebar nav a, .side-brand .brand { white-space: nowrap; }
+.sidebar nav a svg, .side-pin svg, .side-brand .brand-logo { flex: none; }
+.side-pin {
+  display: flex; align-items: center; gap: 0.65rem; width: 100%;
+  padding: 0.5rem 0.6rem; border-radius: 8px; border: 1px solid transparent; border-left-width: 3px;
+  background: transparent; color: inherit; font-size: 0.85rem; font-weight: 600; white-space: nowrap; opacity: 0.8;
+}
+.side-pin:hover:not(:disabled) { background: rgba(255, 255, 255, 0.08); opacity: 1; }
+
+@media (min-width: 901px) {
+  .shell.side-auto { grid-template-columns: 64px minmax(0, 1fr); }
+  .side-auto .shell-main { grid-column: 2; }
+  .side-auto .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 60; width: 64px; height: auto;
+    overflow-x: hidden; transition: width 0.18s ease, box-shadow 0.18s ease;
+  }
+  .side-auto .sidebar:hover, .side-auto .sidebar:focus-within { width: 236px; box-shadow: 0 0 40px rgba(0, 0, 0, 0.35); }
+  .side-auto .sidebar .side-label, .side-auto .sidebar .side-group h2, .side-auto .sidebar .side-agents h2,
+  .side-auto .sidebar .side-agent-name, .side-auto .sidebar .side-agent-status, .side-auto .sidebar .side-muted {
+    transition: opacity 0.12s ease;
+  }
+  .side-auto .sidebar:not(:hover):not(:focus-within) :is(.side-label, .side-group h2, .side-agents h2, .side-agent-name, .side-agent-status, .side-muted) {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .side-auto .sidebar, .side-auto .sidebar * { transition: none !important; }
+}
+
+.dash-left {
+  position: absolute; top: 16px; left: 16px; z-index: 40; width: 330px; max-height: calc(100% - 72px);
+  display: flex; flex-direction: column; gap: 12px; overflow-y: auto;
+}
+.dash-left .hud { position: relative; top: auto; left: auto; width: auto; flex: none; }
+.dash-title { font-size: 1.35rem; font-weight: 700; margin: 0 0 0.75rem; }
+.hud-panel h2 { margin-bottom: 0.6rem; }
+.hud-panel.collapsed { padding-top: 0.6rem; padding-bottom: 0.6rem; }
+.hud-panel.collapsed h2 { margin-bottom: 0; }
+.hud-toggle {
+  display: flex; align-items: center; gap: 0.5rem; width: 100%; padding: 0; margin: 0;
+  background: none; border: none; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; text-align: left; cursor: pointer;
+}
+.hud-toggle:hover:not(:disabled) { background: none; }
+.hud-toggle svg { margin-left: auto; flex: none; transition: transform 0.15s ease; }
+.hud-toggle[aria-expanded="false"] svg { transform: rotate(-90deg); }
+.hud-summary {
+  display: inline-flex; align-items: center; gap: 6px; margin-left: auto;
+  font-size: 0.76rem; letter-spacing: 0; text-transform: none; font-weight: 600; color: var(--dk-muted);
+}
+.hud-summary + svg { margin-left: 0; }
+.hud-summary .dot { width: 8px; height: 8px; }
+.dash-activity.collapsed { max-height: none; }
+
+/* Halaman Pengaturan */
+.settings h3 { font-size: 0.9rem; margin: 1rem 0 0.5rem; }
+.choices { display: grid; gap: 0.5rem; }
+.choice {
+  display: flex; gap: 0.65rem; align-items: flex-start; margin: 0; padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border); border-radius: 10px; cursor: pointer;
+}
+.choice:has(input:checked) { border-color: var(--si-blue); background: #f2f6fd; }
+.choice > span { display: grid; gap: 0.15rem; }
+.choice input, .check input { width: auto; margin: 0.2rem 0 0; flex: none; }
+.check { display: flex; gap: 0.6rem; align-items: flex-start; margin-bottom: 0.6rem; font-weight: 500; cursor: pointer; }
+.settings hr { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+
+@media (max-width: 820px) {
+  .dash-left { display: contents; }
+}
+
 /* ---------- Landing page (dari commit GitHub "Add landing page styling") ---------- */
 .landing-shell {
   min-height: 100vh;

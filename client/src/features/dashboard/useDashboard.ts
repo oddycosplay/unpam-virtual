@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { DashboardSummary } from "@unpam/shared";
 import { api } from "../../api/http";
+import { usePreferences } from "../../app/preferences";
 
 const POLL_MS = 5000;
 
@@ -62,7 +63,9 @@ export function useDashboard() {
   return { summary, error, loaded };
 }
 
+/** Animasi dikurangi bila sistem memintanya atau pengguna memilihnya di Pengaturan. */
 export function useReducedMotion(): boolean {
+  const { prefs } = usePreferences();
   const [reduced, setReduced] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -70,5 +73,5 @@ export function useReducedMotion(): boolean {
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, []);
-  return reduced;
+  return reduced || prefs.reduceMotion;
 }

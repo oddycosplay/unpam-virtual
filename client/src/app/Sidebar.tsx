@@ -4,6 +4,7 @@ import { hasPermission, type AgentStatusView, type Permission, type Role } from 
 import { api } from "../api/http";
 import { Icon, type IconName } from "../components/ui/Icon";
 import { STATUS_COLOR, STATUS_LABEL } from "../world/layout";
+import { usePreferences } from "./preferences";
 
 interface Item {
   to: string;
@@ -38,6 +39,13 @@ const GROUPS: { title: string; items: Item[] }[] = [
       { to: "/admin/audit", label: "Log Audit", icon: "audit", any: ["audit:view"] },
       { to: "/admin/llm", label: "Provider AI", icon: "provider", any: ["admin:config"] },
       { to: "/admin/backup", label: "Backup", icon: "backup", any: ["admin:config"] },
+    ],
+  },
+  {
+    title: "Akun",
+    items: [
+      { to: "/akun", label: "Akun saya", icon: "account" },
+      { to: "/pengaturan", label: "Pengaturan", icon: "settings" },
     ],
   },
 ];
@@ -82,12 +90,14 @@ function AgentStatusWidget() {
 }
 
 export function Sidebar({ role, open, onClose }: { role: Role; open: boolean; onClose: () => void }) {
+  const { prefs, update } = usePreferences();
+  const pinned = prefs.sidebar === "pinned";
   return (
     <aside id="sidebar" className={open ? "sidebar open" : "sidebar"} aria-label="Navigasi utama">
       <div className="side-brand">
         <Link to="/" className="brand small" onClick={onClose}>
           <img src="/logo-unpam-192.png" alt="" className="brand-logo" width={32} height={32} />
-          Unpam Virtual
+          <span className="side-label">Unpam Virtual</span>
         </Link>
         <button type="button" className="icon-button side-close" aria-label="Tutup menu" onClick={onClose}>
           <Icon name="close" />
@@ -103,9 +113,9 @@ export function Sidebar({ role, open, onClose }: { role: Role; open: boolean; on
               <ul>
                 {items.map((item) => (
                   <li key={item.to}>
-                    <NavLink to={item.to} end={item.end} onClick={onClose}>
+                    <NavLink to={item.to} end={item.end} onClick={onClose} title={item.label}>
                       <Icon name={item.icon} />
-                      {item.label}
+                      <span className="side-label">{item.label}</span>
                     </NavLink>
                   </li>
                 ))}
@@ -115,6 +125,16 @@ export function Sidebar({ role, open, onClose }: { role: Role; open: boolean; on
         })}
       </nav>
       <AgentStatusWidget />
+      <button
+        type="button"
+        className="side-pin"
+        aria-pressed={pinned}
+        title={pinned ? "Sembunyikan sidebar otomatis" : "Sematkan sidebar"}
+        onClick={() => update({ sidebar: pinned ? "auto" : "pinned" })}
+      >
+        <Icon name={pinned ? "sidebar" : "pin"} />
+        <span className="side-label">{pinned ? "Sembunyi otomatis" : "Sematkan sidebar"}</span>
+      </button>
     </aside>
   );
 }

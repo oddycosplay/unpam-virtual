@@ -16,6 +16,8 @@ import { WorkPage } from "../features/submissions/WorkPage";
 import { NewProposalPage } from "../features/submissions/NewProposalPage";
 import { SubmissionPage } from "../features/submissions/SubmissionPage";
 import { Sidebar } from "./Sidebar";
+import { PreferencesProvider, usePreferences } from "./preferences";
+import { SettingsPage } from "../features/settings/SettingsPage";
 import { CampusPage } from "../features/campus/CampusPage";
 import { AccountPage } from "../features/account/AccountPage";
 import { ConceptPage } from "../features/concept/ConceptPage";
@@ -37,6 +39,7 @@ function Layout() {
   const { user, loading, logout } = useAuth();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { prefs } = usePreferences();
   const fullBleed = location.pathname === "/" || location.pathname === "/kampus" || location.pathname === "/konsep";
 
   // Tutup laci menu (mobile) saat pindah halaman atau menekan Escape.
@@ -54,7 +57,11 @@ function Layout() {
   if (!user) return <Navigate to="/login" replace />;
 
   return (
-    <div className={fullBleed ? "shell shell-dark" : "shell"}>
+    <div
+      className={["shell", fullBleed && "shell-dark", prefs.sidebar === "auto" && "side-auto", prefs.pageWidth === "wide" && "page-wide"]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <Sidebar role={user.role} open={menuOpen} onClose={() => setMenuOpen(false)} />
       {menuOpen && <div className="sidebar-backdrop" onClick={() => setMenuOpen(false)} aria-hidden />}
       <div className="shell-main">
@@ -99,75 +106,78 @@ function Layout() {
 
 export function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route element={<Layout />}>
-        <Route index element={<DashboardPage />} />
-        <Route path="kampus" element={<CampusPage />} />
-        <Route path="konsep" element={<ConceptPage />} />
-        <Route path="akun" element={<AccountPage />} />
-        <Route path="organisasi" element={<OrganizationsPage />} />
-        <Route
-          path="admin/users"
-          element={
-            <Allow permission="admin:users">
-              <UsersPage />
-            </Allow>
-          }
-        />
-        <Route
-          path="admin/backup"
-          element={
-            <Allow permission="admin:config">
-              <BackupPage />
-            </Allow>
-          }
-        />
-        <Route path="tugas" element={<TasksPage />} />
-        <Route path="hasil-kerja" element={<WorkPage />} />
-        <Route
-          path="proposal/baru"
-          element={
-            <Allow permission="proposal:create">
-              <NewProposalPage />
-            </Allow>
-          }
-        />
-        <Route path="pengajuan/:id" element={<SubmissionPage />} />
-        <Route
-          path="chat"
-          element={
-            <Allow permission="agent:chat">
-              <ChatPage />
-            </Allow>
-          }
-        />
-        <Route
-          path="admin/documents"
-          element={
-            <Allow permission="admin:documents">
-              <DocumentsPage />
-            </Allow>
-          }
-        />
-        <Route
-          path="admin/audit"
-          element={
-            <Allow permission="audit:view">
-              <AuditPage />
-            </Allow>
-          }
-        />
-        <Route
-          path="admin/llm"
-          element={
-            <Allow permission="admin:config">
-              <LlmConfigPage />
-            </Allow>
-          }
-        />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <PreferencesProvider>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route element={<Layout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="kampus" element={<CampusPage />} />
+          <Route path="konsep" element={<ConceptPage />} />
+          <Route path="akun" element={<AccountPage />} />
+          <Route path="pengaturan" element={<SettingsPage />} />
+          <Route path="organisasi" element={<OrganizationsPage />} />
+          <Route
+            path="admin/users"
+            element={
+              <Allow permission="admin:users">
+                <UsersPage />
+              </Allow>
+            }
+          />
+          <Route
+            path="admin/backup"
+            element={
+              <Allow permission="admin:config">
+                <BackupPage />
+              </Allow>
+            }
+          />
+          <Route path="tugas" element={<TasksPage />} />
+          <Route path="hasil-kerja" element={<WorkPage />} />
+          <Route
+            path="proposal/baru"
+            element={
+              <Allow permission="proposal:create">
+                <NewProposalPage />
+              </Allow>
+            }
+          />
+          <Route path="pengajuan/:id" element={<SubmissionPage />} />
+          <Route
+            path="chat"
+            element={
+              <Allow permission="agent:chat">
+                <ChatPage />
+              </Allow>
+            }
+          />
+          <Route
+            path="admin/documents"
+            element={
+              <Allow permission="admin:documents">
+                <DocumentsPage />
+              </Allow>
+            }
+          />
+          <Route
+            path="admin/audit"
+            element={
+              <Allow permission="audit:view">
+                <AuditPage />
+              </Allow>
+            }
+          />
+          <Route
+            path="admin/llm"
+            element={
+              <Allow permission="admin:config">
+                <LlmConfigPage />
+              </Allow>
+            }
+          />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </PreferencesProvider>
   );
 }
