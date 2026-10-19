@@ -84,7 +84,7 @@ export function Sidebar({ role, open, onClose }: { role: Role; open: boolean; on
     <aside id="sidebar" className={open ? "sidebar open" : "sidebar"} aria-label="Navigasi utama">
       <div className="side-brand">
         <Link to="/" className="brand small" onClick={onClose}>
-          <span className="brand-mark" aria-hidden />
+          <img src="/logo-unpam-192.png" alt="" className="brand-logo" width={32} height={32} />
           Unpam Virtual
         </Link>
         <button type="button" className="icon-button side-close" aria-label="Tutup menu" onClick={onClose}>

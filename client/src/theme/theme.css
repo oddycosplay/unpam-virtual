@@ -78,10 +78,9 @@ button.ghost:hover:not(:disabled) { background: #eef2f7; }
 .brand h1 { font-size: 1.35rem; margin: 0; }
 .brand p { margin: 0.15rem 0 0; font-size: 0.88rem; }
 .brand.small { margin: 0; font-weight: 700; }
-.brand-mark {
-  width: 28px; height: 28px; flex: none; border-radius: 6px;
-  background: linear-gradient(135deg, var(--si-blue) 0 60%, var(--si-yellow) 60% 100%);
-}
+/* Logo Universitas Pamulang (lingkaran transparan). */
+.brand-logo { width: 32px; height: 32px; flex: none; border-radius: 50%; display: block; }
+.brand-logo.large { width: 60px; height: 60px; filter: drop-shadow(0 4px 10px rgba(16, 40, 80, 0.18)); }
 
 .topbar {
   display: flex; align-items: center; gap: 0.75rem; min-height: 57px;

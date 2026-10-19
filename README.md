@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="client/public/logo-unpam.png" alt="Logo Universitas Pamulang" width="120" />
+</p>
+
 # Unpam Virtual — Virtual 3D Campus for UNPAM
 
 Unpam Virtual is a web-based MVP that simulates a small 3D campus environment with AI agents, real-time multiplayer, and administrative workflows for academic use-cases.
@@ -128,6 +132,8 @@ Refer to `PRD Unpam Virtual (MVP).md` for full specs.
 ## License / Lisensi
 
 This project is licensed under the MIT License — see `LICENSE`.
+
+Logo Universitas Pamulang (`client/public/logo-unpam*.png`, `client/public/favicon-*.png`) adalah milik Universitas Pamulang dan **tidak** termasuk dalam lisensi MIT. Logo dipakai untuk identitas proyek kampus ini; penggunaan di luar proyek memerlukan izin dari pihak universitas.
 
 ---
 

@@ -68,7 +68,7 @@ function Layout() {
             <Icon name="menu" />
           </button>
           <Link to="/" className="brand small topbar-brand">
-            <span className="brand-mark" aria-hidden />
+            <img src="/logo-unpam-192.png" alt="" className="brand-logo" width={32} height={32} />
             Unpam Virtual
           </Link>
           <div className="topbar-user">

@@ -28,7 +28,7 @@ export function LoginPage() {
     <main className="login">
       <form className="card login-card" onSubmit={onSubmit}>
         <div className="brand">
-          <span className="brand-mark" aria-hidden />
+          <img src="/logo-unpam-192.png" alt="Logo Universitas Pamulang" className="brand-logo large" width={60} height={60} />
           <div>
             <h1>Unpam Virtual</h1>
             <p className="muted">Kampus virtual Prodi Sistem Informasi</p>

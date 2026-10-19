@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Edges, Html } from "@react-three/drei";
 import * as THREE from "three";
@@ -365,8 +365,15 @@ export function CafeTable({ position }: { position: [number, number, number] }) 
   );
 }
 
-/** Gapura kampus di Gerbang & Lobby, dengan papan nama bercahaya. */
+/** Gapura kampus di Gerbang & Lobby, dengan papan nama bercahaya dan emblem logo UNPAM. */
 export function LobbyGate({ position }: { position: [number, number, number] }) {
+  const logo = useMemo(() => {
+    const t = new THREE.TextureLoader().load("/logo-unpam-192.png");
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 4;
+    return t;
+  }, []);
+  useEffect(() => () => logo.dispose(), [logo]);
   return (
     <group position={position}>
       {[-1.9, 1.9].map((x) => (
@@ -383,6 +390,17 @@ export function LobbyGate({ position }: { position: [number, number, number] }) 
         <boxGeometry args={[3.6, 0.12, 0.02]} />
         {glowMaterial(COLORS.siYellow, 1.6)}
       </mesh>
+      {/* Emblem logo di atas gapura, terlihat dari depan dan belakang */}
+      <mesh position={[0, 3.05, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+        <cylinderGeometry args={[0.62, 0.62, 0.08, 48]} />
+        <meshStandardMaterial color={COLORS.siBlue} roughness={0.5} />
+      </mesh>
+      {[1, -1].map((side) => (
+        <mesh key={side} position={[0, 3.05, side * 0.045]} rotation={[0, side === 1 ? 0 : Math.PI, 0]}>
+          <circleGeometry args={[0.56, 48]} />
+          <meshBasicMaterial map={logo} transparent toneMapped={false} />
+        </mesh>
+      ))}
     </group>
   );
 }
